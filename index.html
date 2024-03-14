@@ -2,12 +2,15 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Vite App</title>
+    <script src="/main.js" type="module" defer></script>
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div id="app"></div>
-    <script type="module" src="/main.js"></script>
+    <input checked id="drive" name="control" type="radio" value="drive" />
+    <label for="drive">Drive</label>
+    <input id="arm" name="control" type="radio" value="arm" />
+    <label for="arm">Arm</label>
   </body>
 </html>
