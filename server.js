@@ -19,15 +19,6 @@ oscDatagramServer.open();
 
 oscDatagramServer.on("open", () => {
   console.log("✅ OSC Datagram server is opened");
-  oscDatagramServer.send(new OSC.Message("/rfid", 123, "hello"));
-});
-
-oscDatagramServer.on("/rfid", (message) => {
-  console.log("Received RFID message:", message.args);
-});
-
-oscDatagramServer.on("message", (message) => {
-  console.log("Received message:", message);
 });
 
 const PORT = process.env.PORT || 3001;
@@ -43,10 +34,9 @@ io.on("connection", (socket) => {
     console.log("user disconnected");
   });
 
+  oscDatagramServer.send(new OSC.Message("/rfid", 123, "hello"));
   socket.on("devicemotion", (event) => {
     console.log("devicemotion", event);
-
-    //send datagram
   });
 });
 
