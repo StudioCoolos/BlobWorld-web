@@ -9,7 +9,7 @@ const datagramOptions = {
   },
   send: {
     host: "0.0.0.0",
-    port: 8080,
+    port: 8000,
   },
 };
 
@@ -34,9 +34,11 @@ io.on("connection", (socket) => {
     console.log("user disconnected");
   });
 
-  oscDatagramServer.send(new OSC.Message("/rfid", 123, "hello"));
-  socket.on("devicemotion", (event) => {
-    console.log("devicemotion", event);
+  socket.on("vehicleControl", (event) => {
+    console.log("vehicleControl", event);
+    oscDatagramServer.send(
+      new OSC.Message("/vehicleControl", event.throttle, event.steering),
+    );
   });
 });
 

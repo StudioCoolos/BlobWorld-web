@@ -1,6 +1,55 @@
 import { io } from "socket.io-client";
 
-const socket = io("localhost:3001");
+const socket = io("https://giant-games-peel.loca.lt");
+
+function deviceOrientationPermission(listener) {
+  return new Promise((resolve, reject) => {
+    if (typeof DeviceOrientationEvent.requestPermission === "function") {
+      DeviceOrientationEvent.requestPermission()
+        .then((permissionState) => {
+          if (permissionState === "granted") {
+            addEventListener("deviceorientation", listener, true);
+            resolve("granted");
+          }
+        })
+        .catch(reject);
+    } else {
+      if (navigator.userAgent.indexOf("Mobile") === -1) {
+        reject("Not a mobile device");
+      }
+      addEventListener("deviceorientation", listener, true);
+      resolve("granted");
+    }
+  });
+}
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+document.querySelector("#play").addEventListener("click", () => {
+  deviceOrientationPermission((event) => {
+    console.log("deviceorientation", event);
+    const steering =
+      Math.round(clamp(event.beta / 30, -0.99, 0.99) * 100) / 100;
+    const throttle =
+      Math.round(clamp(event.gamma / 30, -0.99, 0.99) * 100) / 100;
+    if (
+      steering === 1 ||
+      steering === -1 ||
+      throttle === 1 ||
+      throttle === -1
+    ) {
+      // window.navigator.vibrate(200);
+    }
+    socket.emit("vehicleControl", {
+      steering,
+      throttle,
+    });
+  }).then((result) => {
+    console.log(result);
+  });
+});
 
 // ARM JOYSTICK
 const armJoystick = document.querySelector(".arm-joystick");
