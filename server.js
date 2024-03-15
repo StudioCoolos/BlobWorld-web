@@ -40,6 +40,11 @@ io.on("connection", (socket) => {
       new OSC.Message("/vehicleControl", event.throttle, event.steering),
     );
   });
+
+  socket.on("armControl", (event) => {
+    console.log("armControl", event);
+    oscDatagramServer.send(new OSC.Message("/armControl", event.x, event.y));
+  });
 });
 
 console.log(`Server running on http://localhost:${PORT}`);
