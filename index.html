@@ -1,16 +1,25 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Vite App</title>
-    <script src="/main.js" type="module" defer></script>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <input checked id="drive" name="control" type="radio" value="drive" />
-    <label for="drive">Drive</label>
-    <input id="arm" name="control" type="radio" value="arm" />
-    <label for="arm">Arm</label>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Vite App</title>
+  <script src="/main.js" type="module" defer></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <input checked id="drive" name="control" type="radio" value="drive" />
+  <label for="drive">Drive</label>
+  <input id="arm" name="control" type="radio" value="arm" />
+  <label for="arm">Arm</label>
+
+  <div class="container-arm-joystick">
+    <div class="arm-joystick">
+      <div class=" arm-joystick-knob"></div>
+    </div>
+  </div>
+</body>
+
 </html>
