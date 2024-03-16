@@ -13,6 +13,9 @@ socketServer.on("connection", (socket) => {
   const socketName = `${socket._socket.remoteAddress}:${socket._socket.remotePort}`;
   console.log("connected: %s", socketName);
   socket.on("error", console.error);
+  socket.on("close", (code, reason) => {
+    console.log("disconnected: %s", socketName);
+  });
 
   socket.on("message", (message, isBinary) => {
     //use socket name to log message
