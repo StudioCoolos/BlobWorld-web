@@ -1,6 +1,13 @@
-import { io } from "socket.io-client";
+const socket = new WebSocket("ws://localhost:3001");
 
-const socket = io("https://beige-carrots-pick.loca.lt");
+socket.onopen = () => {
+  console.log("[open] Connection established");
+};
+
+socket.onmessage = (event) => {
+  console.log(event.data);
+  console.log(`[message] Data received from server: ${event.data}`);
+};
 
 function deviceOrientationPermission(listener) {
   return new Promise((resolve, reject) => {
@@ -23,35 +30,35 @@ function deviceOrientationPermission(listener) {
   });
 }
 
-function clamp(value, min, max) {
-  return Math.min(Math.max(value, min), max);
-}
-
-document.querySelector("#play").addEventListener("click", () => {
-  deviceOrientationPermission((event) => {
-    console.log("deviceorientation", event);
-    const steering =
-      Math.round(clamp(event.beta / 30, -0.99, 0.99) * 100) / 100;
-    const throttle =
-      Math.round(clamp(event.gamma / 30, -0.99, 0.99) * 100) / 100;
-    if (
-      steering === 1 ||
-      steering === -1 ||
-      throttle === 1 ||
-      throttle === -1
-    ) {
-      // window.navigator.vibrate(200);
-    }
-    socket.emit("vehicleControl", {
-      steering,
-      throttle,
-    });
-  }).then((result) => {
-    console.log(result);
-  });
-});
-
-// ARM JOYSTICK
+// function clamp(value, min, max) {
+//   return Math.min(Math.max(value, min), max);
+// }
+//
+// document.querySelector("#play").addEventListener("click", () => {
+//   deviceOrientationPermission((event) => {
+//     console.log("deviceorientation", event);
+//     const steering =
+//       Math.round(clamp(event.beta / 30, -0.99, 0.99) * 100) / 100;
+//     const throttle =
+//       Math.round(clamp(event.gamma / 30, -0.99, 0.99) * 100) / 100;
+//     if (
+//       steering === 1 ||
+//       steering === -1 ||
+//       throttle === 1 ||
+//       throttle === -1
+//     ) {
+//       // window.navigator.vibrate(200);
+//     }
+//     socket.emit("vehicleControl", {
+//       steering,
+//       throttle,
+//     });
+//   }).then((result) => {
+//     console.log(result);
+//   });
+// });
+//
+// // ARM JOYSTICK
 const armJoystick = document.querySelector(".arm-joystick");
 const knob = document.querySelector(".arm-joystick-knob");
 
@@ -62,7 +69,6 @@ armJoystick.addEventListener("touchstart", (e) => {
   //remove transition
   knob.style.transition = "0s";
   e.preventDefault();
-  socket.emit("armJoystick", { x, y });
 });
 
 armJoystick.addEventListener("touchmove", (e) => {
@@ -78,10 +84,16 @@ armJoystick.addEventListener("touchmove", (e) => {
   const ny = Math.sin(angle) * distance;
   knob.style.transform = `translate(${nx}px, ${ny}px) scale(1.3)`;
   // send something between 1 and -1
-  socket.emit("armControl", {
-    x: Math.round(Math.cos(angle) * 100) / 100,
-    y: Math.round(Math.sin(angle) * 100) / 100,
-  });
+  const armData = {
+    event: "armControl",
+    data: {
+      x: Math.round(Math.cos(angle) * 100) / 100,
+      y: Math.round(Math.sin(angle) * 100) / 100,
+    },
+  };
+
+  socket.send(JSON.stringify(armData));
+
   knob.style.transition = "0s";
 });
 

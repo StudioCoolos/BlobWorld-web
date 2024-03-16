@@ -14,8 +14,6 @@
     "vite": "^5.1.6"
   },
   "dependencies": {
-    "osc-js": "^2.4.0",
-    "socket.io": "^4.7.5",
-    "socket.io-client": "^4.7.5"
+    "ws": "^8.16.0"
   }
 }

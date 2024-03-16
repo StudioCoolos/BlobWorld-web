@@ -1,50 +1,28 @@
-import { Server } from "socket.io";
-import OSC from "osc-js";
+import WebSocket, { WebSocketServer } from "ws";
 
-const datagramOptions = {
-  type: "udp4",
-  open: {
-    host: "0.0.0.0",
-    port: 1111,
-  },
-  send: {
-    host: "0.0.0.0",
-    port: 8000,
-  },
-};
-
-const datagramPlugin = new OSC.DatagramPlugin(datagramOptions);
-const oscDatagramServer = new OSC({ plugin: datagramPlugin });
-oscDatagramServer.open();
-
-oscDatagramServer.on("open", () => {
-  console.log("✅ OSC Datagram server is opened");
+const socketServer = new WebSocketServer({
+  port: process.env.SERVER_PORT || 3001,
 });
 
-const PORT = process.env.PORT || 3001;
-const io = new Server(PORT, {
-  cors: {
-    origin: "*",
-  },
+socketServer.on("error", console.error);
+socketServer.on("listening", () => {
+  console.log("listening on port %s", socketServer.options.port);
 });
 
-io.on("connection", (socket) => {
-  console.log("a user connected");
-  socket.on("disconnect", () => {
-    console.log("user disconnected");
-  });
+socketServer.on("connection", (socket) => {
+  const socketName = `${socket._socket.remoteAddress}:${socket._socket.remotePort}`;
+  console.log("connected: %s", socketName);
+  socket.on("error", console.error);
 
-  socket.on("vehicleControl", (event) => {
-    console.log("vehicleControl", event);
-    oscDatagramServer.send(
-      new OSC.Message("/vehicleControl", event.throttle, event.steering),
-    );
-  });
-
-  socket.on("armControl", (event) => {
-    console.log("armControl", event);
-    oscDatagramServer.send(new OSC.Message("/armControl", event.x, event.y));
+  socket.on("message", (message, isBinary) => {
+    //use socket name to log message
+    console.log("received from %s: %s", socketName, message);
+    socketServer.clients.forEach((client) => {
+      if (client !== socket && client.readyState === WebSocket.OPEN) {
+        const clientName = `${client._socket.remoteAddress}:${client._socket.remotePort}`;
+        console.log("sending to %s: %s", clientName, message);
+        client.send(message, { binary: isBinary });
+      }
+    });
   });
 });
-
-console.log(`Server running on http://localhost:${PORT}`);
