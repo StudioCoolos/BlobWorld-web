@@ -1,4 +1,4 @@
-const socket = new WebSocket("ws://localhost:3001");
+const socket = new WebSocket("wss://blobworld-web-server.onrender.com/");
 
 socket.onopen = () => {
   console.log("[open] Connection established");
