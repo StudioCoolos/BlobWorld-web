@@ -1,5 +1,9 @@
 @import 'reset.css';
 
+html,
 body {
 	background: #333;
+	overflow: hidden;
+	touch-action: none;
+	overscroll-behavior: none;
 }
