@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-export const useWebsocketStore = defineStore('websocket', () => {
+const useWebsocketStore = defineStore('websocket', () => {
 	const ws = ref(new WebSocket('wss://blobworld-web-server.onrender.com'))
 
 	ws.value.onopen = function () {
@@ -27,3 +27,5 @@ export const useWebsocketStore = defineStore('websocket', () => {
 
 	return { ws, sendMessage, disconnect }
 })
+
+export default useWebsocketStore

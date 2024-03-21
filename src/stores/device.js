@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-export const useDeviceStore = defineStore('device', () => {
+const useDeviceStore = defineStore('device', () => {
 	/**
 	 * @type {import('vue').Ref<'portrait' | 'landscape'>}
 	 */
@@ -16,3 +16,5 @@ export const useDeviceStore = defineStore('device', () => {
 
 	return { orientationMode, setOrientationMode }
 })
+
+export default useDeviceStore
