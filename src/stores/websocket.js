@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 const useWebsocketStore = defineStore('websocket', () => {
-	const ws = ref(new WebSocket('wss://blobworld-web-server.onrender.com'))
+	const ws = ref(new WebSocket('wss://localhost:8080'))
 
 	ws.value.onopen = function () {
 		console.log('[open] Connection established')
