@@ -20,8 +20,8 @@ function handlePermissionClick() {
 </script>
 
 <template>
+	<OrientationBlocker />
 	<div v-if="permissionsAccepted">
-		<OrientationBlocker />
 		<Motion />
 		<Orientation />
 	</div>

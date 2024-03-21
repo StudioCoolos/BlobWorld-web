@@ -1,7 +1,7 @@
 <script setup>
 import debounce from '@/utils/debounce.js'
 import useWebsocketStore from '@/stores/websocket.js'
-import { ref } from 'vue'
+import { onUnmounted, ref } from 'vue'
 
 const websocketStore = useWebsocketStore()
 const isStriking = ref(false)
@@ -26,6 +26,12 @@ function handlePermissionClick() {
 	}
 	isStriking.value = !isStriking.value
 }
+
+onUnmounted(() => {
+	if (isStriking.value) {
+		removeEventListener('devicemotion', handleDeviceMotion)
+	}
+})
 </script>
 
 <template>
