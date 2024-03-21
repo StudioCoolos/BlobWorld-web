@@ -1,14 +1,15 @@
 import { defineStore } from 'pinia'
+import { ref } from 'vue'
 
 export const useWebsocketStore = defineStore('websocket', () => {
-	const ws = new WebSocket('wss://blobworld-web-server.onrender.com')
+	const ws = ref(new WebSocket('wss://blobworld-web-server.onrender.com'))
 
-	ws.onopen = function () {
+	ws.value.onopen = function () {
 		console.log('[open] Connection established')
-		ws.send('web')
+		ws.value.send('web')
 	}
 
-	ws.onmessage = function (event) {
+	ws.value.onmessage = function (event) {
 		console.log(`[message] Data received from server: ${event.data}`)
 	}
 
@@ -17,11 +18,11 @@ export const useWebsocketStore = defineStore('websocket', () => {
 	 * @param {string} data.event
 	 */
 	function sendMessage(data) {
-		ws.send(JSON.stringify(data))
+		ws.value.send(JSON.stringify(data))
 	}
 
 	function disconnect() {
-		ws.close()
+		ws.value.close()
 	}
 
 	return { ws, sendMessage, disconnect }
