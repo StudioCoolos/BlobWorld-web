@@ -1,5 +1,5 @@
 <script setup>
-import { useDeviceStore } from '@/stores/device.js'
+import useDeviceStore from '@/stores/device.js'
 
 const deviceStore = useDeviceStore()
 </script>
