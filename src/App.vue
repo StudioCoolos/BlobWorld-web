@@ -21,11 +21,19 @@ function handlePermissionClick() {
 
 <template>
 	<OrientationBlocker />
-	<div v-if="permissionsAccepted">
+	<div v-if="permissionsAccepted" class="rotated-content">
 		<Motion />
 		<Orientation />
 	</div>
 	<button v-else @click="handlePermissionClick">Ask permissions</button>
 </template>
 
-<style scoped></style>
+<style scoped>
+.rotated-content {
+	transform-origin: top left;
+	transform: translateX(100vw) rotate(90deg);
+	position: relative;
+	width: 100vh;
+	height: 100vw;
+}
+</style>
