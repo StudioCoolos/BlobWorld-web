@@ -1,7 +1,7 @@
 {
 	"name": "Kapout",
-	"theme_color": "",
-	"background_color": "",
+	"theme_color": "#333",
+	"background_color": "#333",
 	"display": "fullscreen",
 	"orientation": "landscape-primary"
 }
