@@ -1,31 +1,28 @@
 <script setup>
-import Motion from '@/components/Strike.vue'
-import Orientation from '@/components/Drive.vue'
-import OrientationBlocker from '@/components/OrientationBlocker.vue'
-import allPermissions from '@/utils/permissions.js'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import Player1 from '@/pages/Player1/Player1.vue'
+import NotFound from '@/pages/404/NotFound.vue'
+import Player2 from '@/pages/Player2/Player2.vue'
 
-const permissionsAccepted = ref(false)
-
-function handlePermissionClick() {
-	allPermissions()
-		.then((result) => {
-			permissionsAccepted.value = true
-			console.log(result)
-		})
-		.catch((reason) => {
-			alert(reason)
-		})
+const routes = {
+	'/': Player1,
+	'/player1': Player1,
+	'/player2': Player2
 }
+
+const currentRoute = ref(window.location.hash)
+
+window.addEventListener('hashchange', () => {
+	currentRoute.value = window.location.hash
+})
+
+const currentView = computed(() => {
+	return routes[currentRoute.value.slice(1) || "/"] || NotFound
+})
 </script>
 
 <template>
-	<OrientationBlocker />
-	<div v-if="permissionsAccepted">
-		<Motion />
-		<Orientation />
-	</div>
-	<button v-else @click="handlePermissionClick">Ask permissions</button>
+	<component :is="currentView" />
 </template>
 
 <style scoped></style>
