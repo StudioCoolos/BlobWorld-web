@@ -39,11 +39,7 @@ async function executeWhenOpen() {
 		websocketStore.sendMessage({
 			event: 'p1_connected'
 		})
-		websocketStore.sendMessage({
-			event: 'drive',
-			steering: 20,
-			throttle: 30,
-		})
+		console.log('Event sent')
 	} catch (error) {
 		console.error('WebSocket error:', error);
 	}
