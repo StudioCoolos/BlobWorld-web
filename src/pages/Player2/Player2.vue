@@ -1,32 +1,17 @@
 <script setup>
 import useWebsocketStore from '@/stores/websocket.js'
+import { onMounted } from 'vue'
 
 const websocketStore = useWebsocketStore()
 
-function waitForOpenState(websocket) {
-	return new Promise((resolve, reject) => {
-		if (websocket.readyState === 1) {
-			resolve();
-		} else {
-			websocket.addEventListener('open', resolve, { once: true });
-			websocket.addEventListener('error', reject, { once: true });
-		}
-	});
-}
-
-async function executeWhenOpen() {
-	try {
-		await waitForOpenState(websocketStore.ws);
+onMounted(() => {
+	websocketStore.ws.addEventListener('open', () => {
 		websocketStore.sendMessage({
 			event: 'p2_connected'
 		})
-		console.log('Event sent')
-	} catch (error) {
-		console.error('WebSocket error:', error);
-	}
-}
+	})
+})
 
-executeWhenOpen();
 </script>
 
 <template>
