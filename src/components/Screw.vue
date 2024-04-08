@@ -1,10 +1,13 @@
 <script setup>
 import { onUnmounted, ref } from 'vue'
 import useWebsocketStore from '@/stores/websocket.js'
+import useDeviceStore from '@/stores/device.js'
 
 const emit = defineEmits(['handleFinish'])
 
 const websocketStore = useWebsocketStore()
+const deviceStore = useDeviceStore()
+deviceStore.setOrientationMode('landscape')
 const isScrewing = ref(false)
 const rotation = ref(0)
 const prevAlpha = ref(null)

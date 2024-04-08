@@ -17,7 +17,6 @@ const useDeviceStore = defineStore('device', () => {
 	 */
 	function setOrientationMode(mode) {
 		orientationMode.value = mode
-		const app = document.querySelector('#app')
 		if (mode === 'portrait') {
 			app?.classList.remove('rotated')
 		} else {
