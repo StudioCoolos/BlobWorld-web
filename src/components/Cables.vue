@@ -9,7 +9,11 @@ const props = defineProps({
 	},
 	unknownSide: {
 		type: String,
-		default: '',
+		default: 'left',
+	},
+	endColors: {
+		type: Array,
+		default: null,
 	},
 })
 
@@ -29,7 +33,7 @@ const cablesState = ref(
 	),
 )
 
-const shuffledColors = [...props.colors].sort(() => Math.random() - 0.5)
+const endColors = props.endColors || [...props.colors].sort(() => Math.random() - 0.5)
 
 function handleTouchStart(index, event) {
 	const cableState = cablesState.value.get(props.colors[index])
@@ -40,12 +44,15 @@ function handleTouchStart(index, event) {
 function handleTouchMove(index, event) {
 	const cableState = cablesState.value.get(props.colors[index])
 	const distance = Math.sqrt(
-		(event.touches[0].clientX - cableState.startCableRect.right) ** 2 +
+		(event.touches[0].clientX -
+			(props.unknownSide === 'left' ? cableState.startCableRect.left : cableState.startCableRect.right)) **
+			2 +
 			(event.touches[0].clientY - (cableState.startCableRect.top + cableState.startCableRect.height / 2)) ** 2,
 	)
 	const angle = Math.atan2(
 		event.touches[0].clientY - (cableState.startCableRect.top + cableState.startCableRect.height / 2),
-		event.touches[0].clientX - cableState.startCableRect.right,
+		event.touches[0].clientX -
+			(props.unknownSide === 'left' ? cableState.startCableRect.left : cableState.startCableRect.right),
 	)
 	cableState.transform = `rotate(${angle}rad) scaleX(${distance})`
 }
@@ -59,12 +66,15 @@ function handleTouchEnd(index, event) {
 		event.changedTouches[0].clientY < cableState.endCableRect.bottom
 	) {
 		const distance = Math.sqrt(
-			(cableState.startCableRect.right - cableState.endCableRect.left) ** 2 +
+			((props.unknownSide === 'left' ? cableState.startCableRect.left : cableState.startCableRect.right) -
+				(props.unknownSide === 'left' ? cableState.endCableRect.right : cableState.endCableRect.left)) **
+				2 +
 				(cableState.startCableRect.top - cableState.endCableRect.top) ** 2,
 		)
 		const angle = Math.atan2(
 			cableState.endCableRect.top - cableState.startCableRect.top,
-			cableState.endCableRect.left - cableState.startCableRect.right,
+			(props.unknownSide === 'left' ? cableState.endCableRect.right : cableState.endCableRect.left) -
+				(props.unknownSide === 'left' ? cableState.startCableRect.left : cableState.startCableRect.right),
 		)
 
 		cableState.transform = `rotate(${angle}rad) scaleX(${distance})`
@@ -81,7 +91,10 @@ function handleTouchEnd(index, event) {
 </script>
 
 <template>
-	<div class="cables-container">
+	<div
+		class="cables-container"
+		:class="{ 'unknown-side-left': unknownSide === 'left', 'unknown-side-right': unknownSide === 'right' }"
+	>
 		<div
 			class="cable-wrapper"
 			v-for="(state, index) in cablesState"
@@ -90,26 +103,22 @@ function handleTouchEnd(index, event) {
 			@touchmove="(event) => handleTouchMove(index, event)"
 			@touchend="(event) => handleTouchEnd(index, event)"
 		>
-			<div
-				class="cable"
-				:style="{ background: state[1].attach ? state[0] : unknownSide === 'left' ? unknownColor : state[0] }"
-			/>
-			<div
-				class="joint"
-				:style="{ background: state[1].attach ? state[0] : unknownSide === 'left' ? unknownColor : state[0] }"
-			/>
+			<div class="cable" :style="{ background: state[0] }" />
+			<div class="joint" :style="{ background: state[0] }" />
 			<div
 				class="cable caught-cable"
 				:style="{
-					background: state[1].attach ? state[0] : unknownSide === 'left' ? unknownColor : state[0],
+					background: state[0],
 					transform: state[1].transform,
 				}"
 			/>
 		</div>
-		<div class="end-cable-wrapper" v-for="(color, index) in shuffledColors" :key="index">
+		<div class="end-cable-wrapper" v-for="(color, index) in endColors" :key="index">
 			<div
 				class="cable"
-				:style="{ background: cablesState.get(color).attach ? color : unknownSide === 'right' ? unknownColor : color }"
+				:style="{
+					background: cablesState.get(color).attach ? color : unknownColor,
+				}"
 				:ref="
 					(element) =>
 						cablesState.get(color).endCableRef === null ? (cablesState.get(color).endCableRef = element) : null
@@ -117,7 +126,9 @@ function handleTouchEnd(index, event) {
 			/>
 			<div
 				class="joint"
-				:style="{ background: cablesState.get(color).attach ? color : unknownSide === 'right' ? unknownColor : color }"
+				:style="{
+					background: cablesState.get(color).attach ? color : unknownColor,
+				}"
 			/>
 		</div>
 	</div>
@@ -151,15 +162,16 @@ function handleTouchEnd(index, event) {
 }
 
 .cable-wrapper {
+	grid-column: 1;
 	display: flex;
 	width: max-content;
-	grid-column: 1;
 	position: relative;
 
 	.joint {
 		right: -10px;
 	}
 }
+
 .cable {
 	width: 50px;
 	height: 20px;
@@ -170,5 +182,27 @@ function handleTouchEnd(index, event) {
 	width: 1px;
 	transform-origin: 0 50%;
 	pointer-events: none;
+}
+
+.unknown-side-left {
+	.cable-wrapper {
+		grid-column: 2;
+		justify-self: right;
+		flex-direction: row-reverse;
+		.joint {
+			left: -10px;
+			right: auto;
+		}
+	}
+
+	.end-cable-wrapper {
+		grid-column: 1;
+		justify-self: left;
+
+		.joint {
+			right: -10px;
+			left: auto;
+		}
+	}
 }
 </style>
