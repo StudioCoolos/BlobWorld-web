@@ -1,5 +1,5 @@
 <script setup>
-import { onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import useWebsocketStore from '@/stores/websocket.js'
 import useDeviceStore from '@/stores/device.js'
 
@@ -8,7 +8,6 @@ const emit = defineEmits(['handleFinish'])
 const websocketStore = useWebsocketStore()
 const deviceStore = useDeviceStore()
 deviceStore.setOrientationMode('landscape')
-const isScrewing = ref(false)
 const rotation = ref(0)
 const prevAlpha = ref(null)
 const rotationCount = ref(0)
@@ -50,25 +49,16 @@ function handleFinish() {
 	})
 }
 
-function handlePermissionClick() {
-	if (isScrewing.value) {
-		removeEventListener('deviceorientation', handleDeviceOrientation)
-		rotation.value = 0
-	} else {
-		addEventListener('deviceorientation', handleDeviceOrientation)
-	}
-	isScrewing.value = !isScrewing.value
-}
+onMounted(() => {
+	addEventListener('deviceorientation', handleDeviceOrientation)
+})
 
 onUnmounted(() => {
-	if (isScrewing.value) {
-		removeEventListener('deviceorientation', handleDeviceOrientation)
-	}
+	removeEventListener('deviceorientation', handleDeviceOrientation)
 })
 </script>
 
 <template>
-	<button @click="handlePermissionClick">{{ isScrewing ? 'Disable ' : 'Enable' }} screwing</button>
 	<div class="screw-container">
 		<img src="/images/screw-background.jpg" class="background" alt="" />
 		<svg viewBox="0 0 36 36" class="circle-svg">
