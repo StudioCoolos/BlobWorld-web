@@ -1,44 +1,57 @@
 <script setup>
 import { ref } from 'vue'
 
-const colors = ['red', 'blue', 'green', 'yellow']
+const emit = defineEmits(['handleFinish'])
+const props = defineProps({
+	colors: {
+		type: Array,
+		default: ['red', 'blue', 'green', 'yellow'],
+	},
+	unknownSide: {
+		type: String,
+		default: '',
+	},
+})
 
+const unknownColor = 'grey'
 const cablesState = ref(
 	new Map(
-		colors.map((color) => [
+		props.colors.map((color) => [
 			color,
 			{
 				transform: '',
 				endCableRef: null,
+				endCableRect: {},
+				startCableRect: {},
+				attach: false,
 			},
 		]),
 	),
 )
 
-const shuffledColors = [...colors].sort(() => Math.random() - 0.5)
+const shuffledColors = [...props.colors].sort(() => Math.random() - 0.5)
 
 function handleTouchStart(index, event) {
-	const cableState = cablesState.value.get(colors[index])
+	const cableState = cablesState.value.get(props.colors[index])
 	cableState.startCableRect = event.currentTarget.getBoundingClientRect()
 	cableState.endCableRect = cableState.endCableRef.getBoundingClientRect()
 }
 
 function handleTouchMove(index, event) {
-	const cableState = cablesState.value.get(colors[index])
+	const cableState = cablesState.value.get(props.colors[index])
 	const distance = Math.sqrt(
 		(event.touches[0].clientX - cableState.startCableRect.right) ** 2 +
-			(event.touches[0].clientY - cableState.startCableRect.top) ** 2,
+			(event.touches[0].clientY - (cableState.startCableRect.top + cableState.startCableRect.height / 2)) ** 2,
 	)
 	const angle = Math.atan2(
-		event.touches[0].clientY - cableState.startCableRect.top,
+		event.touches[0].clientY - (cableState.startCableRect.top + cableState.startCableRect.height / 2),
 		event.touches[0].clientX - cableState.startCableRect.right,
 	)
 	cableState.transform = `rotate(${angle}rad) scaleX(${distance})`
 }
 
 function handleTouchEnd(index, event) {
-	//check if the cable is in the end cable
-	const cableState = cablesState.value.get(colors[index])
+	const cableState = cablesState.value.get(props.colors[index])
 	if (
 		event.changedTouches[0].clientX > cableState.endCableRect.left &&
 		event.changedTouches[0].clientX < cableState.endCableRect.right &&
@@ -55,9 +68,15 @@ function handleTouchEnd(index, event) {
 		)
 
 		cableState.transform = `rotate(${angle}rad) scaleX(${distance})`
+		cableState.attach = true
+
+		if (Array.from(cablesState.value.values()).every((state) => state.attach)) {
+			emit('handleFinish')
+		}
 		return
 	}
 	cableState.transform = ''
+	cableState.attach = false
 }
 </script>
 
@@ -71,20 +90,35 @@ function handleTouchEnd(index, event) {
 			@touchmove="(event) => handleTouchMove(index, event)"
 			@touchend="(event) => handleTouchEnd(index, event)"
 		>
-			<div class="cable" :style="{ background: state[0] }" />
-			<div class="joint" :style="{ background: state[0] }" />
-			<div class="cable caught-cable" :style="{ background: state[0], transform: state[1].transform }" />
+			<div
+				class="cable"
+				:style="{ background: state[1].attach ? state[0] : unknownSide === 'left' ? unknownColor : state[0] }"
+			/>
+			<div
+				class="joint"
+				:style="{ background: state[1].attach ? state[0] : unknownSide === 'left' ? unknownColor : state[0] }"
+			/>
+			<div
+				class="cable caught-cable"
+				:style="{
+					background: state[1].attach ? state[0] : unknownSide === 'left' ? unknownColor : state[0],
+					transform: state[1].transform,
+				}"
+			/>
 		</div>
 		<div class="end-cable-wrapper" v-for="(color, index) in shuffledColors" :key="index">
 			<div
 				class="cable"
-				:style="{ background: color }"
+				:style="{ background: cablesState.get(color).attach ? color : unknownSide === 'right' ? unknownColor : color }"
 				:ref="
 					(element) =>
 						cablesState.get(color).endCableRef === null ? (cablesState.get(color).endCableRef = element) : null
 				"
 			/>
-			<div class="joint" :style="{ background: color }" />
+			<div
+				class="joint"
+				:style="{ background: cablesState.get(color).attach ? color : unknownSide === 'right' ? unknownColor : color }"
+			/>
 		</div>
 	</div>
 </template>
@@ -105,6 +139,7 @@ function handleTouchEnd(index, event) {
 	position: absolute;
 	top: 0;
 }
+
 .end-cable-wrapper {
 	grid-column: 2;
 	justify-self: right;
@@ -126,11 +161,12 @@ function handleTouchEnd(index, event) {
 	}
 }
 .cable {
-	width: 40px;
+	width: 50px;
 	height: 20px;
 }
 
 .caught-cable {
+	z-index: 1;
 	width: 1px;
 	transform-origin: 0 50%;
 	pointer-events: none;
