@@ -1,52 +1,50 @@
 <script setup>
 import { onUnmounted, ref } from 'vue'
-import { clamp } from '@/utils/math.js'
 import useWebsocketStore from '@/stores/websocket.js'
+
+const emit = defineEmits(['handleFinish'])
 
 const websocketStore = useWebsocketStore()
 const isScrewing = ref(false)
 const rotation = ref(0)
-const initialCumulativeRotation = ref(0)
 const prevAlpha = ref(null)
 const rotationCount = ref(0)
 const goalRotation = ref(3 * 360)
 
 function handleDeviceOrientation(event) {
-	const currentAlpha = event.alpha // Current alpha value from the event
+	const currentAlpha = event.alpha
 
-	// Initialize prevAlpha with the first alpha value received
 	if (prevAlpha.value === null) {
 		prevAlpha.value = currentAlpha
-		return // Skip the first event to establish a starting point
+		return
 	}
 
 	let difference = currentAlpha - prevAlpha.value
 
-	// Adjust for alpha value continuity
 	if (difference > 180) {
 		difference -= 360
 	} else if (difference < -180) {
 		difference += 360
 	}
 
-	// Update cumulative rotation based on difference
 	rotation.value += difference
 	rotation.value = Math.round(rotation.value * 100) / 100
 	rotation.value = Math.max(rotation.value, 0)
-	console.log(rotation.value)
 
-	// Calculate total rotations (positive for clockwise, negative for counter-clockwise)
 	rotationCount.value = Math.floor(rotation.value / 360)
 
-	// Update previous alpha for next calculation
 	prevAlpha.value = currentAlpha
 
-	const screwData = {
-		event: 'screw',
-		rotation: rotation.value,
+	if (rotationCount.value >= 3) {
+		handleFinish()
 	}
+}
 
-	websocketStore.sendMessage(screwData)
+function handleFinish() {
+	emit('handleFinish')
+	websocketStore.sendMessage({
+		event: 'screw',
+	})
 }
 
 function handlePermissionClick() {
@@ -54,7 +52,6 @@ function handlePermissionClick() {
 		removeEventListener('deviceorientation', handleDeviceOrientation)
 		rotation.value = 0
 	} else {
-		console.log('Adding event listener')
 		addEventListener('deviceorientation', handleDeviceOrientation)
 	}
 	isScrewing.value = !isScrewing.value
@@ -70,7 +67,7 @@ onUnmounted(() => {
 <template>
 	<button @click="handlePermissionClick">{{ isScrewing ? 'Disable ' : 'Enable' }} screwing</button>
 	<div class="screw-container">
-		<img src="/images/screw-background.jpg" class="background" />
+		<img src="/images/screw-background.jpg" class="background" alt="" />
 		<svg viewBox="0 0 36 36" class="circle-svg">
 			<path
 				class="circle"
@@ -80,7 +77,7 @@ onUnmounted(() => {
 				a 15.9155 15.9155 0 0 1 0 -31.831"
 			/>
 		</svg>
-		<img src="/images/screw-cap.png" class="screw" />
+		<img src="/images/screw-cap.png" class="screw" alt="" />
 	</div>
 </template>
 
@@ -113,6 +110,7 @@ button {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	background: url('/images/screw-background.jpg') center center;
 }
 .background {
 	pointer-events: none;

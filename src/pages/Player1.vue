@@ -6,6 +6,7 @@ import allPermissions from '@/utils/permissions.js'
 import { onMounted, ref } from 'vue'
 import useWebsocketStore from '@/stores/websocket.js'
 import Cables from '@/components/Cables.vue'
+import Screw from '@/components/Screw.vue'
 
 const permissionsAccepted = ref(false)
 
@@ -52,9 +53,11 @@ const step = ref(stepEnum.Drive)
 		</div>
 		<button v-else @click="handlePermissionClick">Ask permissions</button>
 	</template>
-	<template v-else-if="step === stepEnum.Screw"> </template>
+	<template v-else-if="step === stepEnum.Screw">
+		<Screw />
+	</template>
 	<template v-else-if="step === stepEnum.Cables">
-		<Cables unknown-side="right" />
+		<Cables unknown-side="right" :handleFinish="() => (step = stepEnum.Drive)" />
 	</template>
 </template>
 

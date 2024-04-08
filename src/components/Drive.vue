@@ -2,8 +2,11 @@
 import { onUnmounted, ref } from 'vue'
 import { clamp } from '@/utils/math.js'
 import useWebsocketStore from '@/stores/websocket.js'
+import useDeviceStore from '@/stores/device.js'
 
 const websocketStore = useWebsocketStore()
+const deviceStore = useDeviceStore()
+deviceStore.setOrientationMode('landscape')
 const isDriving = ref(false)
 const steering = ref(0)
 const throttle = ref(0)

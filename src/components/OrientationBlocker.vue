@@ -1,11 +1,7 @@
-<script setup>
-import useDeviceStore from '@/stores/device.js'
-
-const deviceStore = useDeviceStore()
-</script>
+<script setup></script>
 
 <template>
-	<div class="orientation-blocker" :class="{ [deviceStore.orientationMode]: true }">
+	<div class="orientation-blocker">
 		<div class="content">
 			<img src="/images/rotate-phone.svg" alt="rotate phone" />
 			<p>Please rotate</p>
@@ -21,16 +17,8 @@ const deviceStore = useDeviceStore()
 	z-index: 10000;
 	background-color: #333;
 
-	&.landscape {
-		@media screen and (orientation: landscape) {
-			display: flex;
-		}
-	}
-
-	&.portrait {
-		@media screen and (orientation: portrait) {
-			display: flex;
-		}
+	@media screen and (orientation: landscape) {
+		display: flex;
 	}
 
 	.content {

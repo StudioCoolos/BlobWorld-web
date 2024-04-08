@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue'
+import useDeviceStore from '@/stores/device.js'
 
 const emit = defineEmits(['handleFinish'])
 const props = defineProps({
@@ -17,6 +18,8 @@ const props = defineProps({
 	},
 })
 
+const deviceStore = useDeviceStore()
+deviceStore.setOrientationMode('portrait')
 const unknownColor = 'grey'
 const cablesState = ref(
 	new Map(
