@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import useDeviceStore from '@/stores/device.js'
+import useWebsocketStore from '@/stores/websocket.js'
 
 const emit = defineEmits(['handleFinish'])
 const props = defineProps({
@@ -20,6 +21,7 @@ const props = defineProps({
 
 const deviceStore = useDeviceStore()
 deviceStore.setOrientationMode('portrait')
+const websocketStore = useWebsocketStore()
 const unknownColor = 'grey'
 const cablesState = ref(
 	new Map(
@@ -85,6 +87,9 @@ function handleTouchEnd(index, event) {
 
 		if (Array.from(cablesState.value.values()).every((state) => state.attach)) {
 			emit('handleFinish')
+			websocketStore.sendMessage({
+				event: 'cables',
+			})
 		}
 		return
 	}
