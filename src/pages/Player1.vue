@@ -55,10 +55,11 @@ websocketStore.ws.addEventListener('message', (event) => {
 		<button v-else @click="handlePermissionClick">Ask permissions</button>
 	</template>
 	<template v-else-if="step === stepEnum.Screw">
-		<Screw />
+		<Screw v-if="permissionsAccepted" @handleFinish="step = stepEnum.Cables" />
+		<button v-else @click="handlePermissionClick">Ask permissions</button>
 	</template>
 	<template v-else-if="step === stepEnum.Cables">
-		<Cables unknown-side="right" :handleFinish="() => (step = stepEnum.Drive)" />
+		<Cables unknown-side="right" @handleFinish="step = stepEnum.Drive" />
 	</template>
 	<template v-else-if="step === stepEnum.Throw">
 		<Throw />
