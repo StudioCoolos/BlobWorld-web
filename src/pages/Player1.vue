@@ -9,7 +9,15 @@ import Cables from '@/components/Cables.vue'
 import Screw from '@/components/Screw.vue'
 import Throw from '@/components/Throw.vue'
 
+const websocketStore = useWebsocketStore()
 const permissionsAccepted = ref(false)
+const stepEnum = Object.freeze({
+	Drive: 0,
+	Screw: 1,
+	Cables: 2,
+	Throw: 3,
+})
+const step = ref(stepEnum.Drive)
 
 function handlePermissionClick() {
 	allPermissions()
@@ -22,16 +30,13 @@ function handlePermissionClick() {
 		})
 }
 
-const websocketStore = useWebsocketStore()
+websocketStore.ws.addEventListener('message', (event) => {
+	const data = JSON.parse(event.data)
 
-const stepEnum = Object.freeze({
-	Drive: 0,
-	Screw: 1,
-	Cables: 2,
-	Throw: 3,
+	if (data.event === 'breakdown') {
+		step.value = stepEnum.Screw
+	}
 })
-
-const step = ref(stepEnum.Drive)
 </script>
 
 <template>
