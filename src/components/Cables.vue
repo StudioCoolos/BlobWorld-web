@@ -14,7 +14,7 @@ const props = defineProps({
 	},
 	endColors: {
 		type: Array,
-		default: null,
+		default: ['blue', 'green', 'red', 'yellow'],
 	},
 })
 

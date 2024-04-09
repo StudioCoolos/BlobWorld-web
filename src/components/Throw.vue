@@ -55,7 +55,6 @@ function handleTouchEnd(event) {
 	if (y < startY) {
 		const force = Math.round(Math.sqrt((x - startX) ** 2 + (y - startY) ** 2))
 		const angle = Math.round((Math.atan2(y - startY, x - startX) + Math.PI / 2) * (180 / Math.PI))
-		console.log('force', force, 'angle', angle)
 
 		websocketStore.sendMessage({
 			event: 'throw',
