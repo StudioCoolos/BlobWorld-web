@@ -3,10 +3,11 @@ import OrientationBlocker from '@/components/OrientationBlocker.vue'
 import Strike from '@/components/Strike.vue'
 import Drive from '@/components/Drive.vue'
 import allPermissions from '@/utils/permissions.js'
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import useWebsocketStore from '@/stores/websocket.js'
 import Cables from '@/components/Cables.vue'
 import Screw from '@/components/Screw.vue'
+import Throw from '@/components/Throw.vue'
 
 const permissionsAccepted = ref(false)
 
@@ -23,27 +24,22 @@ function handlePermissionClick() {
 
 const websocketStore = useWebsocketStore()
 
-onMounted(() => {
-	websocketStore.ws.addEventListener('open', () => {
-		websocketStore.sendMessage({
-			event: 'p1_connected',
-		})
-	})
-})
 const stepEnum = Object.freeze({
 	Drive: 0,
 	Screw: 1,
 	Cables: 2,
+	Throw: 3,
 })
 
 const step = ref(stepEnum.Drive)
 </script>
 
 <template>
-	<fieldset>
+	<fieldset style="z-index: 10; position: relative">
 		<label><input type="radio" v-model="step" :value="stepEnum.Drive" /> Drive</label>
 		<label><input type="radio" v-model="step" :value="stepEnum.Screw" /> Screw</label>
 		<label><input type="radio" v-model="step" :value="stepEnum.Cables" /> Cables</label>
+		<label><input type="radio" v-model="step" :value="stepEnum.Throw" /> Throw</label>
 	</fieldset>
 	<template v-if="step === stepEnum.Drive">
 		<OrientationBlocker />
@@ -58,6 +54,9 @@ const step = ref(stepEnum.Drive)
 	</template>
 	<template v-else-if="step === stepEnum.Cables">
 		<Cables unknown-side="right" :handleFinish="() => (step = stepEnum.Drive)" />
+	</template>
+	<template v-else-if="step === stepEnum.Throw">
+		<Throw />
 	</template>
 </template>
 
