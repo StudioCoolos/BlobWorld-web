@@ -38,6 +38,9 @@ function handlePermissionClick() {
 onUnmounted(() => {
 	if (isDriving.value) {
 		removeEventListener('deviceorientation', handleDeviceOrientation)
+		steering.value = 0
+		throttle.value = 0
+		isDriving.value = false
 	}
 })
 </script>

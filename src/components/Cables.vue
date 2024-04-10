@@ -13,6 +13,10 @@ const props = defineProps({
 		type: String,
 		default: 'left',
 	},
+	middleColors: {
+		type: Array,
+		default: ['green', 'blue', 'red', 'yellow'],
+	},
 	endColors: {
 		type: Array,
 		default: ['blue', 'green', 'red', 'yellow'],
@@ -22,6 +26,16 @@ const props = defineProps({
 const deviceStore = useDeviceStore()
 deviceStore.setOrientationMode('portrait')
 const websocketStore = useWebsocketStore()
+websocketStore.ws.addEventListener('message', (event) => {
+	const data = JSON.parse(event.data)
+
+	if (data.event === 'cables') {
+		cablesState.value.get(data.color).open = true
+	}
+	if (data.event === 'cablesFinish') {
+		emit('handleFinish')
+	}
+})
 const unknownColor = 'grey'
 const cablesState = ref(
 	new Map(
@@ -33,12 +47,11 @@ const cablesState = ref(
 				endCableRect: {},
 				startCableRect: {},
 				attach: false,
+				open: false,
 			},
 		]),
 	),
 )
-
-const endColors = props.endColors || [...props.colors].sort(() => Math.random() - 0.5)
 
 function handleTouchStart(index, event) {
 	const cableState = cablesState.value.get(props.colors[index])
@@ -64,35 +77,50 @@ function handleTouchMove(index, event) {
 
 function handleTouchEnd(index, event) {
 	const cableState = cablesState.value.get(props.colors[index])
-	if (
-		event.changedTouches[0].clientX > cableState.endCableRect.left &&
-		event.changedTouches[0].clientX < cableState.endCableRect.right &&
-		event.changedTouches[0].clientY > cableState.endCableRect.top &&
-		event.changedTouches[0].clientY < cableState.endCableRect.bottom
-	) {
-		const distance = Math.sqrt(
-			((props.unknownSide === 'left' ? cableState.startCableRect.left : cableState.startCableRect.right) -
-				(props.unknownSide === 'left' ? cableState.endCableRect.right : cableState.endCableRect.left)) **
-				2 +
-				(cableState.startCableRect.top - cableState.endCableRect.top) ** 2,
-		)
-		const angle = Math.atan2(
-			cableState.endCableRect.top - cableState.startCableRect.top,
-			(props.unknownSide === 'left' ? cableState.endCableRect.right : cableState.endCableRect.left) -
-				(props.unknownSide === 'left' ? cableState.startCableRect.left : cableState.startCableRect.right),
-		)
+	if (props.unknownSide === 'right' || cableState.open) {
+		if (
+			event.changedTouches[0].clientX > cableState.endCableRect.left &&
+			event.changedTouches[0].clientX < cableState.endCableRect.right &&
+			event.changedTouches[0].clientY > cableState.endCableRect.top &&
+			event.changedTouches[0].clientY < cableState.endCableRect.bottom
+		) {
+			const startX = props.unknownSide === 'left' ? cableState.startCableRect.left : cableState.startCableRect.right
+			const endX =
+				props.unknownSide === 'left'
+					? cableState.endCableRect.right - cableState.endCableRect.width / 2
+					: cableState.endCableRect.left + cableState.endCableRect.width / 2
+			const startY = cableState.startCableRect.top
+			const endY = cableState.endCableRect.top + cableState.endCableRect.height / 2
 
-		cableState.transform = `rotate(${angle}rad) scaleX(${distance})`
-		cableState.attach = true
+			const distance = Math.sqrt((startX - endX) ** 2 + (startY - endY) ** 2)
+			const angle = Math.atan2(endY - startY, endX - startX)
 
-		if (Array.from(cablesState.value.values()).every((state) => state.attach)) {
-			emit('handleFinish')
-			websocketStore.sendMessage({
-				event: 'cables',
-			})
+			cableState.transform = `rotate(${angle}rad) scaleX(${distance})`
+			cableState.attach = true
+
+			if (props.unknownSide === 'left') {
+				if (Array.from(cablesState.value.values()).every((state) => state.attach)) {
+					emit('handleFinish')
+
+					websocketStore.sendMessage({
+						event: 'cablesFinish',
+						recipient: 'web',
+					})
+					websocketStore.sendMessage({
+						event: 'cablesFinish',
+					})
+				}
+			} else {
+				websocketStore.sendMessage({
+					event: 'cables',
+					recipient: 'web',
+					color: props.colors[index],
+				})
+			}
+			return
 		}
-		return
 	}
+
 	cableState.transform = ''
 	cableState.attach = false
 }
@@ -121,23 +149,16 @@ function handleTouchEnd(index, event) {
 				}"
 			/>
 		</div>
-		<div class="end-cable-wrapper" v-for="(color, index) in endColors" :key="index">
+		<div class="end-cable-wrapper" v-for="(color, index) in middleColors" :key="index">
 			<div
 				class="cable"
-				:style="{
-					background: cablesState.get(color).attach ? color : unknownColor,
-				}"
+				:style="{ background: unknownSide === 'left' ? color : unknownColor }"
 				:ref="
 					(element) =>
 						cablesState.get(color).endCableRef === null ? (cablesState.get(color).endCableRef = element) : null
 				"
 			/>
-			<div
-				class="joint"
-				:style="{
-					background: cablesState.get(color).attach ? color : unknownColor,
-				}"
-			/>
+			<div class="witness" :class="{ attach: cablesState.get(color).attach || cablesState.get(color).open }" />
 		</div>
 	</div>
 </template>
@@ -163,9 +184,25 @@ function handleTouchEnd(index, event) {
 	grid-column: 2;
 	justify-self: right;
 	position: relative;
+	z-index: 1;
 
-	.joint {
-		left: -10px;
+	.cable {
+		height: 80px;
+		background: v-bind(unknownColor);
+	}
+
+	.witness {
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+		background: black;
+		position: absolute;
+		top: 20%;
+		left: 20%;
+
+		&.attach {
+			background: white;
+		}
 	}
 }
 
@@ -207,8 +244,8 @@ function handleTouchEnd(index, event) {
 		grid-column: 1;
 		justify-self: left;
 
-		.joint {
-			right: -10px;
+		.witness {
+			right: 20%;
 			left: auto;
 		}
 	}

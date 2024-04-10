@@ -26,7 +26,7 @@ websocketStore.ws.addEventListener('message', (event) => {
 
 <template>
 	<fieldset style="z-index: 10; position: relative">
-		<label><input type="radio" v-model="step" :value="stepEnum.Throw" /> Screw</label>
+		<label><input type="radio" v-model="step" :value="stepEnum.Throw" /> Throw</label>
 		<label><input type="radio" v-model="step" :value="stepEnum.Screw" /> Screw</label>
 		<label><input type="radio" v-model="step" :value="stepEnum.Cables" /> Cables</label>
 	</fieldset>
@@ -41,6 +41,7 @@ websocketStore.ws.addEventListener('message', (event) => {
 			unknown-side="left"
 			:colors="['blue', 'green', 'red', 'yellow']"
 			:end-colors="['red', 'blue', 'green', 'yellow']"
+			@handleFinish="step = stepEnum.Throw"
 		/>
 	</template>
 </template>
