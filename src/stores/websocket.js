@@ -6,7 +6,7 @@ const useWebsocketStore = defineStore('websocket', () => {
 
 	ws.value.onopen = function () {
 		console.log('[open] Connection established')
-		ws.value.send('web')
+		// ws.value.send('web')
 	}
 
 	ws.value.onmessage = function (event) {

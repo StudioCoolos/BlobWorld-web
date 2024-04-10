@@ -15,6 +15,9 @@ const stepEnum = Object.freeze({
 
 const step = ref(stepEnum.Throw)
 
+websocketStore.ws.addEventListener('open', ({ target }) => {
+	target.send('web_2')
+})
 websocketStore.ws.addEventListener('message', (event) => {
 	const data = JSON.parse(event.data)
 

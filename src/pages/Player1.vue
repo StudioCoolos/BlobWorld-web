@@ -1,5 +1,4 @@
 <script setup>
-import OrientationBlocker from '@/components/OrientationBlocker.vue'
 import Strike from '@/components/Strike.vue'
 import Drive from '@/components/Drive.vue'
 import allPermissions from '@/utils/permissions.js'
@@ -30,6 +29,9 @@ function handlePermissionClick() {
 		})
 }
 
+websocketStore.ws.addEventListener('open', ({ target }) => {
+	target.send('web_1')
+})
 websocketStore.ws.addEventListener('message', (event) => {
 	const data = JSON.parse(event.data)
 

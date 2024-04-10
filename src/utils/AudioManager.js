@@ -12,7 +12,7 @@ export default class AudioManager {
 		this.audios = {
 			correct: {
 				src: '/audios/correct.mp3',
-				autoplay: true,
+				autoplay: false,
 				loop: false,
 				volume: 1,
 			},

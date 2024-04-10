@@ -104,7 +104,7 @@ function handleTouchEnd(index, event) {
 
 					websocketStore.sendMessage({
 						event: 'cablesFinish',
-						recipient: 'web',
+						recipient: 'web_1',
 					})
 					websocketStore.sendMessage({
 						event: 'cablesFinish',
@@ -113,7 +113,7 @@ function handleTouchEnd(index, event) {
 			} else {
 				websocketStore.sendMessage({
 					event: 'cables',
-					recipient: 'web',
+					recipient: 'web_2',
 					color: props.colors[index],
 				})
 			}
