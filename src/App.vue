@@ -3,6 +3,9 @@ import { computed, ref } from 'vue'
 import Player1 from '@/pages/Player1.vue'
 import Page404 from '@/pages/404.vue'
 import Player2 from '@/pages/Player2.vue'
+import OrientationBlocker from '@/components/OrientationBlocker.vue'
+import AudioManager from '@/utils/AudioManager.js'
+const audioManager = new AudioManager()
 
 const routes = {
 	'/': Player1,
@@ -18,6 +21,7 @@ const currentView = computed(() => {
 </script>
 
 <template>
+	<OrientationBlocker />
 	<component :is="currentView" />
 </template>
 

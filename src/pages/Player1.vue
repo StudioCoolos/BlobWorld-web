@@ -47,7 +47,6 @@ websocketStore.ws.addEventListener('message', (event) => {
 		<label><input type="radio" v-model="step" :value="stepEnum.Throw" /> Throw</label>
 	</fieldset>
 	<template v-if="step === stepEnum.Drive">
-		<OrientationBlocker />
 		<div v-if="permissionsAccepted">
 			<Strike />
 			<Drive />
