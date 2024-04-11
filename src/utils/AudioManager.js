@@ -22,6 +22,36 @@ export default class AudioManager {
 				loop: false,
 				volume: 1,
 			},
+			chill: {
+				src: '/audios/radio/chill.mp3',
+				autoplay: false,
+				loop: true,
+				volume: 1,
+			},
+			country: {
+				src: '/audios/radio/country.mp3',
+				autoplay: false,
+				loop: true,
+				volume: 1,
+			},
+			eightys: {
+				src: '/audios/radio/eightys.mp3',
+				autoplay: false,
+				loop: true,
+				volume: 1,
+			},
+			techno: {
+				src: '/audios/radio/techno.mp3',
+				autoplay: false,
+				loop: true,
+				volume: 1,
+			},
+			switch: {
+				src: '/audios/radio/switch.mp3',
+				autoplay: false,
+				loop: false,
+				volume: 1,
+			},
 		}
 		this.#setAudioInstances()
 		this.#setAudioContextReadyListener()
@@ -35,6 +65,14 @@ export default class AudioManager {
 			audio.loop = values.loop
 			audio.volume = values.volume
 			this.audios[key].instance = audio
+
+			this.audios[key].instance.on = (event, callback) => {
+				this.audios[key].instance.addEventListener(event, callback)
+			}
+
+			this.audios[key].instance.off = (event, callback) => {
+				this.audios[key].instance.removeEventListener(event, callback)
+			}
 		})
 	}
 	#setAudioContextReadyListener() {
@@ -71,5 +109,20 @@ export default class AudioManager {
 
 	play(name) {
 		this.audios[name].instance.play()
+	}
+
+	stop() {
+		Object.keys(this.audios).forEach((key) => {
+			this.audios[key].instance.pause()
+			this.audios[key].instance.currentTime = 0
+		})
+	}
+
+	setVolume(name, volume) {
+		this.audios[name].instance.volume = volume
+	}
+
+	pause(name) {
+		this.audios[name].instance.pause()
 	}
 }
