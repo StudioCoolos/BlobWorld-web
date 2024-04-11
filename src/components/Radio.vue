@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue'
+
 import AudioManager from '@/utils/AudioManager.js'
 
 const props = defineProps({

@@ -1,10 +1,12 @@
 <script setup>
-import useWebsocketStore from '@/stores/websocket.js'
 import { ref } from 'vue'
+
 import Cables from '@/components/Cables.vue'
 import Screw from '@/components/Screw.vue'
 import Throw from '@/components/Throw.vue'
 import Radio from '@/components/Radio.vue'
+
+import useWebsocketStore from '@/stores/websocket.js'
 
 const websocketStore = useWebsocketStore()
 
