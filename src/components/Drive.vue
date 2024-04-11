@@ -3,6 +3,7 @@ import { onUnmounted, ref } from 'vue'
 import { clamp } from '@/utils/math.js'
 import useWebsocketStore from '@/stores/websocket.js'
 import useDeviceStore from '@/stores/device.js'
+import debounce from '@/utils/debounce.js'
 
 const websocketStore = useWebsocketStore()
 const deviceStore = useDeviceStore()
@@ -11,17 +12,20 @@ const isDriving = ref(false)
 const steering = ref(0)
 const throttle = ref(0)
 
-function handleDeviceOrientation(event) {
-	steering.value = Math.round(clamp(event.beta / 30, -1, 1) * 100) / 100
-	throttle.value = Math.round(clamp(event.gamma / 30 + 1, -1, 1) * 100) / 100
-
+const debounceMessage = debounce(() => {
 	const driveData = {
 		event: 'drive',
 		steering: steering.value,
 		throttle: throttle.value,
 	}
-
 	websocketStore.sendMessage(driveData)
+}, 200)
+
+function handleDeviceOrientation(event) {
+	steering.value = Math.round(clamp(event.beta / 30, -1, 1) * 100) / 100
+	throttle.value = Math.round(clamp(event.gamma / 30 + 1, -1, 1) * 100) / 100
+
+	debounceMessage()
 }
 
 function handlePermissionClick() {
