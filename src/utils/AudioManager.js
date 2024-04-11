@@ -16,6 +16,12 @@ export default class AudioManager {
 				loop: false,
 				volume: 1,
 			},
+			train: {
+				src: '/audios/train.mp3',
+				autoplay: false,
+				loop: false,
+				volume: 1,
+			},
 		}
 		this.#setAudioInstances()
 		this.#setAudioContextReadyListener()
@@ -38,7 +44,15 @@ export default class AudioManager {
 				this.audioContextReady = true
 				Object.keys(this.audios).forEach((key) => {
 					const audio = this.audios[key]
-					if (audio.autoplay) audio.instance.play()
+					if (audio.autoplay) {
+						audio.instance.play()
+					} else {
+						audio.instance.muted = true
+						audio.instance.play()
+						audio.instance.pause()
+						audio.instance.currentTime = 0
+						audio.instance.muted = false
+					}
 				})
 			},
 			{ once: true },
