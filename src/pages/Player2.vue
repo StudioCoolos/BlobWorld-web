@@ -1,19 +1,23 @@
 <script setup>
-import useWebsocketStore from '@/stores/websocket.js'
 import { ref } from 'vue'
+
 import Cables from '@/components/Cables.vue'
 import Screw from '@/components/Screw.vue'
 import Throw from '@/components/Throw.vue'
+import Radio from '@/components/Radio.vue'
+
+import useWebsocketStore from '@/stores/websocket.js'
 
 const websocketStore = useWebsocketStore()
 
 const stepEnum = Object.freeze({
-	Throw: 0,
-	Screw: 1,
-	Cables: 2,
+	Radio: 0,
+	Throw: 1,
+	Screw: 2,
+	Cables: 3,
 })
 
-const step = ref(stepEnum.Throw)
+const step = ref(stepEnum.Radio)
 
 websocketStore.ws.addEventListener('open', ({ target }) => {
 	target.send('web_2')
@@ -29,6 +33,7 @@ websocketStore.ws.addEventListener('message', (event) => {
 
 <template>
 	<fieldset style="z-index: 10; position: relative">
+		<label><input type="radio" v-model="step" :value="stepEnum.Radio" /> Radio</label>
 		<label><input type="radio" v-model="step" :value="stepEnum.Throw" /> Throw</label>
 		<label><input type="radio" v-model="step" :value="stepEnum.Screw" /> Screw</label>
 		<label><input type="radio" v-model="step" :value="stepEnum.Cables" /> Cables</label>
@@ -46,6 +51,9 @@ websocketStore.ws.addEventListener('message', (event) => {
 			:end-colors="['red', 'blue', 'green', 'yellow']"
 			@handleFinish="step = stepEnum.Throw"
 		/>
+	</template>
+	<template v-else-if="step === stepEnum.Radio">
+		<Radio />
 	</template>
 </template>
 
