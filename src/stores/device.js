@@ -6,6 +6,7 @@ const useDeviceStore = defineStore('device', () => {
 	 * @type {import('vue').Ref<'portrait' | 'landscape'>}
 	 */
 	const orientationMode = ref('portrait')
+	const isWarning = ref(false)
 
 	const app = document.querySelector('#app')
 	if (orientationMode.value === 'landscape') {
@@ -24,7 +25,7 @@ const useDeviceStore = defineStore('device', () => {
 		}
 	}
 
-	return { orientationMode, setOrientationMode }
+	return { orientationMode, setOrientationMode, isWarning }
 })
 
 export default useDeviceStore

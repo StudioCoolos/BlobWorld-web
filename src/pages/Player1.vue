@@ -7,8 +7,10 @@ import useWebsocketStore from '@/stores/websocket.js'
 import Cables from '@/components/Cables.vue'
 import Screw from '@/components/Screw.vue'
 import Throw from '@/components/Throw.vue'
+import useDeviceStore from '@/stores/device.js'
 
 const websocketStore = useWebsocketStore()
+const deviceStore = useDeviceStore()
 const permissionsAccepted = ref(false)
 const stepEnum = Object.freeze({
 	Drive: 0,
@@ -36,6 +38,10 @@ websocketStore.ws.addEventListener('message', (event) => {
 	const data = JSON.parse(event.data)
 
 	if (data.event === 'breakdown') {
+		deviceStore.isWarning = true
+		setTimeout(() => {
+			deviceStore.isWarning = false
+		}, 2000)
 		step.value = stepEnum.Screw
 	}
 })
