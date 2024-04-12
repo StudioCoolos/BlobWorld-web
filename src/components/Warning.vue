@@ -1,15 +1,24 @@
 <script setup>
 import useDeviceStore from '@/stores/device.js'
+import AudioManager from '@/utils/AudioManager.js'
 
 const deviceStore = useDeviceStore()
+const audioManager = new AudioManager()
+
+function handleTransitionEnter(el, done) {
+	audioManager.play('alarm')
+	setTimeout(done, 2000)
+}
 </script>
 
 <template>
-	<div class="warning" v-if="deviceStore.isWarning">
-		<h1>WARNING</h1>
-		<p>Do not attempt to repair the device yourself. Please contact the manufacturer for assistance.</p>
-		<img src="/images/warning.png" alt="Warning" />
-	</div>
+	<Transition appear @enter="handleTransitionEnter" name="fade">
+		<div class="warning" v-if="deviceStore.isWarning">
+			<h1>WARNING</h1>
+			<p>Do not attempt to repair the device yourself. Please contact the manufacturer for assistance.</p>
+			<img src="/images/warning.png" alt="Warning" />
+		</div>
+	</Transition>
 </template>
 
 <style scoped>

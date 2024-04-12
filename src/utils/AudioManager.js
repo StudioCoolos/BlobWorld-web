@@ -52,6 +52,12 @@ export default class AudioManager {
 				loop: false,
 				volume: 1,
 			},
+			alarm: {
+				src: '/audios/alarm.mp3',
+				autoplay: false,
+				loop: false,
+				volume: 1,
+			},
 		}
 		this.#setAudioInstances()
 		this.#setAudioContextReadyListener()
