@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 
 import Cables from '@/components/Cables.vue'
 import Screw from '@/components/Screw.vue'
@@ -28,6 +28,14 @@ websocketStore.ws.addEventListener('message', (event) => {
 	if (data.event === 'breakdown') {
 		step.value = stepEnum.Screw
 	}
+})
+
+onMounted(() => {
+	websocketStore.ws.addEventListener('open', () => {
+		websocketStore.sendMessage({
+			event: 'p2_connected',
+		})
+	})
 })
 </script>
 
