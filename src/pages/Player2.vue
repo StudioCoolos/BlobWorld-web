@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 
 import Cables from '@/components/Cables.vue'
 import Screw from '@/components/Screw.vue'
@@ -22,6 +22,9 @@ const step = ref(stepEnum.Radio)
 
 websocketStore.ws.addEventListener('open', ({ target }) => {
 	target.send('web_2')
+	websocketStore.sendMessage({
+		event: 'p2_connected',
+	})
 })
 websocketStore.ws.addEventListener('message', (event) => {
 	const data = JSON.parse(event.data)
@@ -41,14 +44,6 @@ function handlePermissionClick() {
 			alert(reason)
 		})
 }
-
-onMounted(() => {
-	websocketStore.ws.addEventListener('open', () => {
-		websocketStore.sendMessage({
-			event: 'p2_connected',
-		})
-	})
-})
 </script>
 
 <template>

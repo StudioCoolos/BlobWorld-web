@@ -2,7 +2,7 @@
 import Strike from '@/components/Strike.vue'
 import Drive from '@/components/Drive.vue'
 import allPermissions from '@/utils/permissions.js'
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import useWebsocketStore from '@/stores/websocket.js'
 import Cables from '@/components/Cables.vue'
 import Screw from '@/components/Screw.vue'
@@ -33,6 +33,9 @@ function handlePermissionClick() {
 
 websocketStore.ws.addEventListener('open', ({ target }) => {
 	target.send('web_1')
+	websocketStore.sendMessage({
+		event: 'p1_connected',
+	})
 })
 websocketStore.ws.addEventListener('message', (event) => {
 	const data = JSON.parse(event.data)
@@ -44,14 +47,6 @@ websocketStore.ws.addEventListener('message', (event) => {
 		}, 2000)
 		step.value = stepEnum.Screw
 	}
-})
-
-onMounted(() => {
-	websocketStore.ws.addEventListener('open', () => {
-		websocketStore.sendMessage({
-			event: 'p1_connected',
-		})
-	})
 })
 </script>
 
