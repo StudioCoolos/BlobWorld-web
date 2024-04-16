@@ -50,6 +50,7 @@ function onEnable() {
 }
 
 function onPause() {
+	isRadioPlaying.value = !isRadioPlaying.value
 	websocketStore.sendMessage({ event: 'radio', type: 'pause' })
 }
 
@@ -60,7 +61,7 @@ function onChangeVolume(event) {
 
 <template>
 	<button @click="onEnable" class="center" v-if="!isRadioPlaying">Enable radio</button>
-	<button @click="onPause" v-else>Pause radio</button>
+	<button @click="onPause" v-else>Turn off radio</button>
 	<input type="range" min="0" max="100" value="100" @input="onChangeVolume" />
 	<select class="center" @change="onChangeRadio" v-show="isRadioPlaying">
 		<option v-for="radio in radios" :value="radio.value">{{ radio.label }}</option>
