@@ -5,20 +5,23 @@ import Cables from '@/components/Cables.vue'
 import Screw from '@/components/Screw.vue'
 import Throw from '@/components/Throw.vue'
 import Radio from '@/components/Radio.vue'
+import Klaxon from '@/components/Klaxon.vue'
+import Headlights from '@/components/Headlights.vue'
 
 import useWebsocketStore from '@/stores/websocket.js'
+
 import allPermissions from '@/utils/permissions.js'
 
 const websocketStore = useWebsocketStore()
 const permissionsAccepted = ref(false)
 
 const stepEnum = Object.freeze({
-	Radio: 0,
+	Controls: 0,
 	Throw: 1,
 	Screw: 2,
 	Cables: 3,
 })
-const step = ref(stepEnum.Radio)
+const step = ref(stepEnum.Controls)
 
 websocketStore.ws.addEventListener('open', ({ target }) => {
 	target.send('web_2')
@@ -48,7 +51,7 @@ function handlePermissionClick() {
 
 <template>
 	<fieldset style="z-index: 10; position: relative">
-		<label><input type="radio" v-model="step" :value="stepEnum.Radio" /> Radio</label>
+		<label><input type="radio" v-model="step" :value="stepEnum.Controls" /> Controls</label>
 		<label><input type="radio" v-model="step" :value="stepEnum.Throw" /> Throw</label>
 		<label><input type="radio" v-model="step" :value="stepEnum.Screw" /> Screw</label>
 		<label><input type="radio" v-model="step" :value="stepEnum.Cables" /> Cables</label>
@@ -65,12 +68,13 @@ function handlePermissionClick() {
 			unknown-side="left"
 			:colors="['blue', 'green', 'red', 'yellow']"
 			:end-colors="['red', 'blue', 'green', 'yellow']"
-			@handleFinish="step = stepEnum.Radio"
+			@handleFinish="step = stepEnum.Controls"
 		/>
 	</template>
-	<template v-else-if="step === stepEnum.Radio">
+	<template v-else-if="step === stepEnum.Controls">
 		<Radio />
+		<Headlights />
+		<Klaxon />
 	</template>
 </template>
-
 <style scoped></style>
