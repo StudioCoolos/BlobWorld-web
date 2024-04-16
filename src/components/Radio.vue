@@ -60,15 +60,26 @@ function onChangeVolume(event) {
 </script>
 
 <template>
-	<button @click="onEnable" class="center" v-if="!isRadioPlaying">Enable radio</button>
-	<button @click="onPause" v-else>Turn off radio</button>
-	<input type="range" min="0" max="100" value="100" @input="onChangeVolume" />
-	<select class="center" @change="onChangeRadio" v-show="isRadioPlaying">
-		<option v-for="radio in radios" :value="radio.value">{{ radio.label }}</option>
-	</select>
+	<div class="vertical center" style="gap: 16px">
+		<div class="vertical" style="gap: 8px">
+			<button @click="onEnable" v-if="!isRadioPlaying">Enable radio</button>
+			<button @click="onPause" v-else>Turn off radio</button>
+			<select @change="onChangeRadio" v-show="isRadioPlaying">
+				<option v-for="radio in radios" :value="radio.value">{{ radio.label }}</option>
+			</select>
+		</div>
+		<div class="vertical" style="gap: 8px">
+			<label for="volume" style="text-align: center">Volume</label>
+			<input type="range" min="0" max="100" value="100" @input="onChangeVolume" />
+		</div>
+	</div>
 </template>
 
 <style scoped>
+.vertical {
+	display: flex;
+	flex-direction: column;
+}
 .center {
 	position: absolute;
 	top: 50%;
