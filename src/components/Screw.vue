@@ -11,7 +11,7 @@ deviceStore.setOrientationMode('landscape')
 const rotation = ref(0)
 const prevAlpha = ref(null)
 const rotationCount = ref(0)
-const goalRotation = ref(3 * 360)
+const goalRotation = ref(1)
 
 function handleDeviceOrientation(event) {
 	const currentAlpha = event.alpha
@@ -37,7 +37,7 @@ function handleDeviceOrientation(event) {
 
 	prevAlpha.value = currentAlpha
 
-	if (rotationCount.value >= 3) {
+	if (rotationCount.value >= goalRotation.value) {
 		handleFinish()
 	}
 }
@@ -89,7 +89,7 @@ onUnmounted(() => {
 	fill: none;
 	stroke-width: 2;
 	stroke-linecap: round;
-	stroke-dasharray: calc((v-bind(rotation) / v-bind(goalRotation)) * 100), 100;
+	stroke-dasharray: calc((v-bind(rotation) / (v-bind(goalRotation) * 360)) * 100), 100;
 }
 
 button {
