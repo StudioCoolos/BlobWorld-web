@@ -23,6 +23,7 @@ const currentView = computed(() => {
 <template>
 	<Warning />
 	<OrientationBlocker />
+	<!-- <OrientationBlocker /> -->
 	<component :is="currentView" />
 </template>
 

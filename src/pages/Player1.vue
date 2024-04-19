@@ -8,6 +8,7 @@ import Cables from '@/components/Cables.vue'
 import Screw from '@/components/Screw.vue'
 import Throw from '@/components/Throw.vue'
 import useDeviceStore from '@/stores/device.js'
+import Key from '@/components/Key.vue'
 
 const websocketStore = useWebsocketStore()
 const deviceStore = useDeviceStore()
@@ -17,6 +18,7 @@ const stepEnum = Object.freeze({
 	Screw: 1,
 	Cables: 2,
 	Throw: 3,
+	Key: 4,
 })
 const step = ref(stepEnum.Drive)
 
@@ -56,6 +58,7 @@ websocketStore.ws.addEventListener('message', (event) => {
 		<label><input type="radio" v-model="step" :value="stepEnum.Screw" /> Screw</label>
 		<label><input type="radio" v-model="step" :value="stepEnum.Cables" /> Cables</label>
 		<label><input type="radio" v-model="step" :value="stepEnum.Throw" /> Throw</label>
+		<label><input type="radio" v-model="step" :value="stepEnum.Key" /> Key</label>
 	</fieldset>
 	<template v-if="step === stepEnum.Drive">
 		<div v-if="permissionsAccepted">
@@ -73,6 +76,9 @@ websocketStore.ws.addEventListener('message', (event) => {
 	</template>
 	<template v-else-if="step === stepEnum.Throw">
 		<Throw />
+	</template>
+	<template v-else-if="step === stepEnum.Key">
+		<Key />
 	</template>
 </template>
 
