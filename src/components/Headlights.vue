@@ -2,8 +2,10 @@
 import { ref } from 'vue'
 
 import useWebsocketStore from '@/stores/websocket.js'
+import useStatesStore from '@/stores/states.js'
 
 const websocketStore = useWebsocketStore()
+const statesStore = useStatesStore()
 
 const isHeadlightsOn = ref(false)
 const isWebsocketConnected = ref(false)
@@ -17,11 +19,15 @@ function onClick() {
 		return
 	}
 	isHeadlightsOn.value = !isHeadlightsOn.value
+	console.log('isHeadlightsOn', isHeadlightsOn.value)
 
 	websocketStore.sendMessage({
 		event: 'headlights',
 		value: isHeadlightsOn.value,
+		recipient: 'web_1',
 	})
+
+	statesStore.states.headlights.enabled = isHeadlightsOn.value
 }
 </script>
 
