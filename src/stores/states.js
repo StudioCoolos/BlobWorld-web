@@ -12,7 +12,7 @@ const useStatesStore = defineStore('notification', () => {
 		wipers: {
 			onTitle: 'WIPERS ON',
 			offTitle: 'WIPERS OFF',
-			enabled: true,
+			enabled: false,
 			icon: '/images/wipers.svg',
 		},
 	})

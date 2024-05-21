@@ -36,27 +36,53 @@ websocketStore.ws.addEventListener('open', () => {
 
 websocketStore.ws.addEventListener('message', (ev) => {
 	const data = JSON.parse(ev.data)
-	currentNotification.value = data.value ? states[data.event].onTitle : states[data.event].offTitle
 
-	if (newNotification.isActive()) {
-		newNotification.pause()
-		newNotification.clear()
-	}
+	if (data.event === 'headlights' || data.event === 'wipers') {
+		currentNotification.value = data.value ? states[data.event].onTitle : states[data.event].offTitle
 
-	if (data.value) {
-		nextTick(() => {
+		if (newNotification.isActive()) {
+			newNotification.pause()
+			newNotification.clear()
+		}
+
+		if (data.value) {
+			nextTick(() => {
+				newNotification.to(statesContainer.value, { opacity: 0, duration: itemDuration })
+				newNotification.to(dynamicBar.value, { opacity: 1, duration: itemDuration })
+				newNotification.to(notificationTextWidth, {
+					value: notificationText.value.offsetWidth + 120,
+					duration: itemDuration,
+					onComplete: () => {
+						states[data.event].enabled = data.value
+					},
+				})
+				newNotification.to(notificationText.value, { opacity: 1, duration: itemDuration })
+				newNotification.to(dynamicBar.value, { opacity: 0, duration: itemDuration, delay: itemDelay })
+				newNotification.to(statesContainer.value, { opacity: 1, duration: itemDuration })
+
+				// reset
+				newNotification.to(notificationTextWidth, { value: 50, duration: 0 })
+				newNotification.to(notificationText.value, { opacity: 0, duration: 0 })
+				newNotification.to(
+					{},
+					{
+						duration: 0,
+						onComplete: () => {
+							newNotification.clear()
+						},
+					},
+				)
+			})
+			newNotification.play()
+		} else {
 			newNotification.to(statesContainer.value, { opacity: 0, duration: itemDuration })
 			newNotification.to(dynamicBar.value, { opacity: 1, duration: itemDuration })
 			newNotification.to(notificationTextWidth, {
 				value: notificationText.value.offsetWidth + 120,
 				duration: itemDuration,
-				onComplete: () => {
-					states[data.event].enabled = data.value
-				},
 			})
 			newNotification.to(notificationText.value, { opacity: 1, duration: itemDuration })
 			newNotification.to(dynamicBar.value, { opacity: 0, duration: itemDuration, delay: itemDelay })
-			newNotification.to(statesContainer.value, { opacity: 1, duration: itemDuration })
 
 			// reset
 			newNotification.to(notificationTextWidth, { value: 50, duration: 0 })
@@ -70,35 +96,12 @@ websocketStore.ws.addEventListener('message', (ev) => {
 					},
 				},
 			)
-		})
-		newNotification.play()
-	} else {
-		newNotification.to(statesContainer.value, { opacity: 0, duration: itemDuration })
-		newNotification.to(dynamicBar.value, { opacity: 1, duration: itemDuration })
-		newNotification.to(notificationTextWidth, {
-			value: notificationText.value.offsetWidth + 120,
-			duration: itemDuration,
-		})
-		newNotification.to(notificationText.value, { opacity: 1, duration: itemDuration })
-		newNotification.to(dynamicBar.value, { opacity: 0, duration: itemDuration, delay: itemDelay })
 
-		// reset
-		newNotification.to(notificationTextWidth, { value: 50, duration: 0 })
-		newNotification.to(notificationText.value, { opacity: 0, duration: 0 })
-		newNotification.to(
-			{},
-			{
-				duration: 0,
-				onComplete: () => {
-					newNotification.clear()
-				},
-			},
-		)
-
-		newNotification.play().then(() => {
-			gsap.to(statesContainer.value, { opacity: 1, duration: itemDuration })
-			states[data.event].enabled = data.value
-		})
+			newNotification.play().then(() => {
+				gsap.to(statesContainer.value, { opacity: 1, duration: itemDuration })
+				states[data.event].enabled = data.value
+			})
+		}
 	}
 })
 </script>
