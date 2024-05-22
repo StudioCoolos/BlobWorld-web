@@ -20,7 +20,7 @@ const stepEnum = Object.freeze({
 	Throw: 3,
 	Key: 4,
 })
-const step = ref(stepEnum.Drive)
+const step = ref(stepEnum.Key)
 
 function handlePermissionClick() {
 	allPermissions()
