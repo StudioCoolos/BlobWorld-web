@@ -18,7 +18,7 @@ function sendDriveData() {
 	const driveData = {
 		event: 'drive',
 		steering: drivingStore.steering,
-		throttle: drivingStore.steering,
+		throttle: drivingStore.throttle,
 	}
 	websocketStore.sendMessage(driveData)
 }

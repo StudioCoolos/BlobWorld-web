@@ -180,7 +180,7 @@ websocketStore.ws.addEventListener('message', (ev) => {
 	.container {
 		padding: 8px;
 		border-radius: 50%;
-		background-color: red;
+		background-color: #000;
 		position: relative;
 		top: 0;
 		left: 0;
