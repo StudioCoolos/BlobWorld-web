@@ -5,6 +5,7 @@ import { useDrivingStore } from '@/stores/driving.js'
 import { useHour } from '@/hooks/useHour.js'
 import Speed from '@/components/Speed.vue'
 import Strike from '@/components/Strike.vue'
+import OrientationBlocker from '@/components/OrientationBlocker.vue'
 
 const drivingStore = useDrivingStore()
 
@@ -12,6 +13,7 @@ const { time } = useHour()
 </script>
 
 <template>
+	<OrientationBlocker />
 	<Strike />
 	<Drive />
 	<div class="go" :class="{ active: drivingStore.isDriving }">

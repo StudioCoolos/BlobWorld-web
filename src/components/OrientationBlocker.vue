@@ -17,7 +17,7 @@
 	z-index: 10000;
 	background-color: #333;
 
-	@media screen and (orientation: landscape) {
+	@media screen and (orientation: portrait) {
 		display: flex;
 	}
 

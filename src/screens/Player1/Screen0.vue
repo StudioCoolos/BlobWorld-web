@@ -21,7 +21,14 @@ function handlePermissionClick() {
 </script>
 
 <template>
-	<button @click="handlePermissionClick">Ask permissions</button>
+	<button class="btn" @click="handlePermissionClick">Autoriser le gyroscope</button>
 </template>
 
-<style scoped></style>
+<style scoped>
+.btn {
+	padding: 8px 16px;
+	border-radius: 8px;
+	color: white;
+	background-color: #000;
+}
+</style>
