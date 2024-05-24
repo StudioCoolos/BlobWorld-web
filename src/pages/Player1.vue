@@ -9,6 +9,7 @@ import Screw from '@/components/Screw.vue'
 import Throw from '@/components/Throw.vue'
 import useDeviceStore from '@/stores/device.js'
 import Key from '@/components/Key.vue'
+import Toaster from '@/components/Toaster.vue'
 
 const websocketStore = useWebsocketStore()
 const deviceStore = useDeviceStore()
@@ -80,6 +81,8 @@ websocketStore.ws.addEventListener('message', (event) => {
 	<template v-else-if="step === stepEnum.Key">
 		<Key />
 	</template>
+
+	<Toaster />
 </template>
 
 <style scoped></style>

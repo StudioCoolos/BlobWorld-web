@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 
 import Cables from '@/components/Cables.vue'
 import Screw from '@/components/Screw.vue'
@@ -11,6 +11,8 @@ import Headlights from '@/components/Headlights.vue'
 import useWebsocketStore from '@/stores/websocket.js'
 
 import allPermissions from '@/utils/permissions.js'
+import Toaster from '@/components/Toaster.vue'
+import useStatesStore from '@/stores/states.js'
 
 const websocketStore = useWebsocketStore()
 const permissionsAccepted = ref(false)
