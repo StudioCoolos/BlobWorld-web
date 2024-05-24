@@ -83,7 +83,7 @@ function tick() {
 	inset: 0;
 	display: flex;
 	z-index: 2;
-	top: -50px;
+	top: -20px;
 }
 .bubble {
 	margin: auto;
