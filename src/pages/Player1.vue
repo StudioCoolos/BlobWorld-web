@@ -26,7 +26,7 @@ const stepEnum = Object.freeze({
 	Throw: 3,
 	Key: 4,
 })
-const step = ref(stepEnum.Key)
+const step = ref(stepEnum.Drive)
 
 websocketStore.ws.addEventListener('open', ({ target }) => {
 	target.send('web_1')
@@ -66,33 +66,26 @@ const activeScreen = computed(() => store.activeScreen)
 	<!--		<label><input type="radio" v-model="step" :value="stepEnum.Throw" /> Throw</label>-->
 	<!--		<label><input type="radio" v-model="step" :value="stepEnum.Key" /> Key</label>-->
 	<!--	</fieldset>-->
-	<!--	<template v-if="step === stepEnum.Drive">-->
-	<!--		<div v-if="permissionsAccepted">-->
-	<!--			<Strike />-->
-	<!--			<Drive />-->
-	<!--		</div>-->
-	<!--		<button v-else @click="handlePermissionClick">Ask permissions</button>-->
-	<!--	</template>-->
-	<!--	<template v-else-if="step === stepEnum.Screw">-->
-	<!--		<Screw v-if="permissionsAccepted" @handleFinish="step = stepEnum.Cables" />-->
-	<!--		<button v-else @click="handlePermissionClick">Ask permissions</button>-->
-	<!--	</template>-->
-	<!--	<template v-else-if="step === stepEnum.Cables">-->
-	<!--		<Cables unknown-side="right" @handleFinish="step = stepEnum.Drive" />-->
-	<!--	</template>-->
-	<!--	<template v-else-if="step === stepEnum.Throw">-->
-	<!--		<Throw />-->
-	<!--	</template>-->
-	<!--	<template v-else-if="step === stepEnum.Key">-->
-	<!--		<Key />-->
-	<!--	</template>-->
-
-	<Screen
-		v-for="(screen, index) in screens"
-		:key="index"
-		:isActive="activeScreen === index"
-		:component="screen.component"
-	/>
+	<template v-if="step === stepEnum.Drive">
+		<Screen
+			v-for="(screen, index) in screens"
+			:key="index"
+			:isActive="activeScreen === index"
+			:component="screen.component"
+		/>
+	</template>
+	<template v-else-if="step === stepEnum.Screw">
+		<Screw @handleFinish="step = stepEnum.Cables" />
+	</template>
+	<template v-else-if="step === stepEnum.Cables">
+		<Cables unknown-side="right" @handleFinish="step = stepEnum.Drive" />
+	</template>
+	<template v-else-if="step === stepEnum.Throw">
+		<Throw />
+	</template>
+	<template v-else-if="step === stepEnum.Key">
+		<Key />
+	</template>
 	<Toaster />
 </template>
 
