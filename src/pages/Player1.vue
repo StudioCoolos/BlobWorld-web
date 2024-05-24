@@ -15,6 +15,7 @@ import Screen1 from '@/screens/Screen1.vue'
 import { useActiveScreensStore } from '@/stores/activeScreens.js'
 import Screen2 from '@/screens/Screen2.vue'
 import Screen0 from '@/screens/Screen0.vue'
+import ScreenDriving from '@/screens/ScreenDriving.vue'
 
 const websocketStore = useWebsocketStore()
 const deviceStore = useDeviceStore()
@@ -51,6 +52,7 @@ const screens = ref([
 	{ component: shallowRef(Screen0) },
 	{ component: shallowRef(Screen1) },
 	{ component: shallowRef(Screen2) },
+	{ component: shallowRef(ScreenDriving) },
 ])
 
 const activeScreen = computed(() => store.activeScreen)

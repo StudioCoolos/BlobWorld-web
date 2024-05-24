@@ -4,22 +4,21 @@ import { clamp, lerp } from '@/utils/math.js'
 import useWebsocketStore from '@/stores/websocket.js'
 import useDeviceStore from '@/stores/device.js'
 import debounce from '@/utils/debounce.js'
+import { useDrivingStore } from '@/stores/driving.js'
 
 const websocketStore = useWebsocketStore()
 const deviceStore = useDeviceStore()
+const drivingStore = useDrivingStore()
 deviceStore.setOrientationMode('landscape')
-const isDriving = ref(false)
 const steering = ref(0)
 const throttle = ref(0)
-let targetSteering = 0
-let targetThrottle = 0
 let previousTime = performance.now()
 
 function sendDriveData() {
 	const driveData = {
 		event: 'drive',
-		steering: targetSteering,
-		throttle: targetThrottle,
+		steering: drivingStore.steering,
+		throttle: drivingStore.steering,
 	}
 	websocketStore.sendMessage(driveData)
 }
@@ -27,8 +26,8 @@ function sendDriveData() {
 const debounceMessage = debounce(sendDriveData, 200)
 
 function handleDeviceOrientation(event) {
-	targetSteering = Math.round(clamp(event.beta / 30, -1, 1) * 100) / 100
-	targetThrottle = Math.round(clamp(event.gamma / 30 + 1, -1, 1) * 100) / 100
+	drivingStore.setSteering(Math.round(clamp(event.beta / 30, -1, 1) * 100) / 100)
+	drivingStore.setThrottle(Math.round(clamp(event.gamma / 30 + 1, -1, 1) * 100) / 100)
 
 	debounceMessage()
 }
@@ -40,25 +39,25 @@ onMounted(() => {
 
 onUnmounted(() => {
 	removeEventListener('deviceorientation', handleDeviceOrientation)
-	targetSteering = 0
-	targetThrottle = 0
+	drivingStore.setSteering(0)
+	drivingStore.setThrottle(0)
 	sendDriveData()
-	isDriving.value = false
+	drivingStore.setIsDriving(false)
 })
 
 function handleStartEngine(event) {
-	if (event.touches.length < 2 || isDriving.value) return
+	if (event.touches.length < 2 || drivingStore.isDriving) return
 	addEventListener('deviceorientation', handleDeviceOrientation)
-	isDriving.value = true
+	drivingStore.setIsDriving(true)
 }
 
 function handleStopEngine(event) {
-	if (event.touches.length >= 2 || !isDriving.value) return
+	if (event.touches.length >= 2 || !drivingStore.isDriving) return
 	removeEventListener('deviceorientation', handleDeviceOrientation)
-	targetSteering = 0
-	targetThrottle = 0
+	drivingStore.setSteering(0)
+	drivingStore.setThrottle(0)
 	sendDriveData()
-	isDriving.value = false
+	drivingStore.setIsDriving(false)
 }
 
 function tick() {
@@ -66,15 +65,15 @@ function tick() {
 	const deltaTime = currentTime - previousTime
 	previousTime = currentTime
 
-	steering.value = lerp(steering.value, targetSteering, deltaTime / 100)
-	throttle.value = lerp(throttle.value, targetThrottle, deltaTime / 100)
+	steering.value = lerp(steering.value, drivingStore.steering, deltaTime / 100)
+	throttle.value = lerp(throttle.value, drivingStore.throttle, deltaTime / 100)
 	requestAnimationFrame(tick)
 }
 </script>
 
 <template>
 	<div class="bubble-container" @touchstart.prevent="handleStartEngine" @touchend.prevent="handleStopEngine">
-		<div class="bubble" :class="{ active: isDriving }" />
+		<div class="bubble" :class="{ active: drivingStore.isDriving }" />
 	</div>
 </template>
 
@@ -83,12 +82,13 @@ function tick() {
 	position: absolute;
 	inset: 0;
 	display: flex;
-	z-index: -1;
+	z-index: 2;
+	top: -50px;
 }
 .bubble {
 	margin: auto;
-	width: 250px;
-	height: 250px;
+	width: 100px;
+	height: 100px;
 	background-color: #333;
 	border-radius: 50%;
 	transition: background-color 0.2s;
