@@ -11,11 +11,11 @@ import useDeviceStore from '@/stores/device.js'
 import Key from '@/components/Key.vue'
 import Toaster from '@/components/Toaster.vue'
 import Screen from '@/components/Screen.vue'
-import Screen1 from '@/screens/Screen1.vue'
+import Screen1 from '@/screens/Player1/Screen1.vue'
 import { useActiveScreensStore } from '@/stores/activeScreens.js'
-import Screen2 from '@/screens/Screen2.vue'
-import Screen0 from '@/screens/Screen0.vue'
-import ScreenDriving from '@/screens/ScreenDriving.vue'
+import Screen2 from '@/screens/Player1/Screen2.vue'
+import Screen0 from '@/screens/Player1/Screen0.vue'
+import ScreenDriving from '@/screens/Player1/ScreenDriving.vue'
 
 const websocketStore = useWebsocketStore()
 const deviceStore = useDeviceStore()
