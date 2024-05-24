@@ -49,7 +49,7 @@ websocketStore.ws.addEventListener('message', (event) => {
 
 const store = useActiveScreensStore()
 
-const screens = ref([{ component: shallowRef(Screen0) }, { component: shallowRef(Screen1) }])
+const screens = ref([{ component: shallowRef(Screen1) }])
 
 const activeScreen = computed(() => store.activeScreen)
 
