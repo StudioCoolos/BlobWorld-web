@@ -4,6 +4,7 @@ import { clamp, lerp } from '@/utils/math.js'
 import useWebsocketStore from '@/stores/websocket.js'
 import useDeviceStore from '@/stores/device.js'
 import debounce from '@/utils/debounce.js'
+import DriveCanvas from '@/components/DriveCanvas.vue'
 
 const websocketStore = useWebsocketStore()
 const deviceStore = useDeviceStore()
@@ -75,6 +76,7 @@ function tick() {
 <template>
 	<div class="bubble-container" @touchstart.prevent="handleStartEngine" @touchend.prevent="handleStopEngine">
 		<div class="bubble" :class="{ active: isDriving }" />
+		<DriveCanvas />
 	</div>
 </template>
 
@@ -83,7 +85,10 @@ function tick() {
 	position: absolute;
 	inset: 0;
 	display: flex;
-	z-index: -1;
+	z-index: 0;
+	opacity: 0;
+	visibility: hidden;
+	overflow: hidden;
 }
 .bubble {
 	margin: auto;
@@ -92,6 +97,7 @@ function tick() {
 	background-color: #333;
 	border-radius: 50%;
 	transition: background-color 0.2s;
+	z-index: 2;
 
 	transform: translate(calc(v-bind(steering) * 50vh), calc(v-bind(throttle) * -50vw))
 		scaleX(calc(v-bind(throttle) * v-bind(throttle) * (2 - 1) + 1))
