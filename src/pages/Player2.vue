@@ -16,6 +16,7 @@ import Radio from '@/components/Radio.vue'
 import Headlights from '@/components/Headlights.vue'
 import Klaxon from '@/components/Klaxon.vue'
 import Key from '@/components/Key.vue'
+import Compass from '@/components/Compass.vue'
 
 const websocketStore = useWebsocketStore()
 const permissionsAccepted = ref(false)
@@ -26,6 +27,7 @@ const stepEnum = Object.freeze({
 	Screw: 2,
 	Cables: 3,
 	Key: 4,
+	Compass: 5,
 })
 const step = ref(stepEnum.Controls)
 
@@ -44,6 +46,9 @@ websocketStore.ws.addEventListener('message', (event) => {
 
 	if (data.event === 'breakdown') {
 		step.value = stepEnum.Screw
+	}
+
+	if (data.event === 'compass') {
 	}
 })
 
@@ -73,6 +78,7 @@ function handlePermissionClick() {
 
 <template>
 	<fieldset style="z-index: 10; position: relative">
+		<label><input type="radio" v-model="step" :value="stepEnum.Compass" /> Compass</label>
 		<label><input type="radio" v-model="step" :value="stepEnum.Controls" /> Controls</label>
 		<label><input type="radio" v-model="step" :value="stepEnum.Throw" /> Throw</label>
 		<label><input type="radio" v-model="step" :value="stepEnum.Screw" /> Screw</label>
@@ -104,6 +110,9 @@ function handlePermissionClick() {
 	</template>
 	<template v-else-if="step === stepEnum.Key">
 		<Key />
+	</template>
+	<template v-else-if="step === stepEnum.Compass">
+		<Compass />
 	</template>
 </template>
 <style scoped></style>
