@@ -19,13 +19,13 @@ websocketStore.ws.addEventListener('message', (event) => {
 	const data = JSON.parse(event.data)
 
 	if (data.event === 'compass') {
-		targetVehicleAngle = data.vehicleAngle
+		targetVehicleAngle = data.vehicleAngle.replace(',', '.')
 
-		const goalAngle = data.goalAngle
+		const goalAngle = data.goalAngle.replace(',', '.')
 		const radialGoalAngle = (goalAngle * Math.PI) / 180 - Math.PI / 2
 		targetGoalAngleX = Math.cos(radialGoalAngle)
 		targetGoalAngleY = Math.sin(radialGoalAngle)
-		targetGoalDistance = clamp((data.goalDistance / 20_000) * 100, 0, 100)
+		targetGoalDistance = clamp((data.goalDistance.replace(',', '.') / 20_000) * 180, 0, 180)
 	}
 })
 
@@ -82,8 +82,8 @@ img {
 	top: 50%;
 	left: 50%;
 	transition: opacity 1s;
-	transform: translateX(v-bind('goalAngleX * goalDistance * 1.8 + "px"'))
-		translateY(v-bind('goalAngleY * goalDistance * 1.8 + "px"'));
+	transform: translateX(v-bind('goalAngleX * goalDistance + "px"'))
+		translateY(v-bind('goalAngleY * goalDistance + "px"'));
 }
 
 .hidden {
