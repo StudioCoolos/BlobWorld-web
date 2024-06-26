@@ -10,41 +10,70 @@ websocketStore.ws.addEventListener('message', (event) => {
 
 	if (data.event === 'p2_connected') {
 		store.setActiveScreen(2)
-
-		setTimeout(() => {
-			store.setActiveScreen(3)
-		}, 3000)
 	}
 })
 </script>
 
 <template>
 	<div class="Screen1">
-		<p class="title">Bienvenue à bord</p>
-		<p class="subtitle">En attente du co-pilote...</p>
+		<p class="title" data-text="Bienvenue à bord">Bienvenue à bord</p>
+		<p class="subtitle" data-text="En attente du co-pilote...">En attente du co-pilote...</p>
 	</div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+@use '@/assets/functions' as *;
+@use '@/assets/mixins' as *;
+@use '@/assets/variables' as *;
+
 .Screen1 {
 	display: flex;
 	flex-direction: column;
 	text-transform: uppercase;
-	color: #000;
+	color: $purple;
 	text-align: center;
-	font-family: 'League Gothic', sans-serif;
-
-	font-style: normal;
-	font-weight: 400;
-	line-height: normal;
+	@include base-text;
 
 	.title {
-		font-size: 40px;
+		position: relative;
+		top: 0;
+		left: 0;
+		font-size: vw(24px);
+		font-weight: 700;
+		z-index: 1;
+
+		&::after {
+			@include clone-data-text;
+			filter: blur(vw(4px));
+		}
 	}
 
 	.subtitle {
-		font-size: 24px;
+		position: relative;
+		top: 0;
+		left: 0;
+		font-size: vw(16px);
 		opacity: 0.45;
+		font-weight: 500;
+		text-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+		z-index: 1;
+		animation: blink 2s infinite ease-in-out;
+
+		&::after {
+			@include clone-data-text;
+			filter: blur(vw(4px));
+		}
+	}
+
+	@keyframes blink {
+		0%,
+		100% {
+			opacity: 0.45;
+		}
+
+		50% {
+			opacity: 0.2;
+		}
 	}
 }
 </style>

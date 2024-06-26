@@ -73,32 +73,100 @@ function tick() {
 
 <template>
 	<div class="bubble-container" @touchstart.prevent="handleStartEngine" @touchend.prevent="handleStopEngine">
+		<svg class="controller" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 168 114">
+			<path stroke="#7B5DD4" stroke-width="1.4" d="M83.7 0v114m83.8-57H0" opacity=".2" />
+			<defs>
+				<filter
+					id="a"
+					width="111.2"
+					height="111.2"
+					x="27.9"
+					y="1.9"
+					color-interpolation-filters="sRGB"
+					filterUnits="userSpaceOnUse"
+				>
+					<feFlood flood-opacity="0" result="BackgroundImageFix" />
+					<feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+					<feGaussianBlur result="effect1_foregroundBlur_3243_37" stdDeviation="11.6" />
+				</filter>
+			</defs>
+		</svg>
 		<div class="bubble" :class="{ active: drivingStore.isDriving }" />
 	</div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+@use '@/assets/functions' as *;
 .bubble-container {
 	position: absolute;
 	inset: 0;
 	display: flex;
-	z-index: 2;
-	top: -20px;
+	z-index: 1;
+	top: 0;
 }
 .bubble {
-	margin: auto;
-	width: 100px;
-	height: 100px;
-	background-color: #333;
-	border-radius: 50%;
-	transition: background-color 0.2s;
+	position: relative;
+	top: vw(116px);
+	left: 0;
+	overflow: visible;
+	margin: 0 auto auto;
+	width: vw(65px);
+	height: vw(65px);
+	transition: background-color 0.2s ease-in-out;
+	will-change: transform;
 
-	transform: translate(calc(v-bind(steering) * 50vh), calc(v-bind(throttle) * -50vw))
-		scaleX(calc(v-bind(throttle) * v-bind(throttle) * (2 - 1) + 1))
-		scaleY(calc(v-bind(steering) * v-bind(steering) * (2 - 1) + 1));
+	transform: translate(calc(v-bind(steering) * vw(250px)), calc(v-bind(throttle) * vw(-116px)))
+		scaleX(calc((v-bind(throttle)) * (v-bind(throttle)) * (2 - 1) + 1))
+		scaleY(calc((v-bind(steering)) * (v-bind(steering)) * (2 - 1) + 1));
+
+	&::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		border-radius: 50%;
+		background-color: #503f84;
+		width: 100%;
+		height: 100%;
+
+		z-index: 1;
+	}
+
+	&::after {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		border-radius: 50%;
+		background-color: #261e3f;
+		filter: blur(vw(11.55px));
+		width: 100%;
+		height: 100%;
+		will-change: filter;
+		transition:
+			background-color 0.2s ease-in-out,
+			filter 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+		z-index: 2;
+	}
 
 	&.active {
-		background-color: #666;
+		&::before {
+			background-color: #503f84;
+		}
+
+		&::after {
+			background-color: #7b5dd4;
+		}
 	}
+}
+
+.controller {
+	position: absolute;
+	top: vw(92px);
+	left: 50%;
+	transform: translateX(-50%);
+	width: vw(168px);
+	height: vw(114px);
+	z-index: 1;
 }
 </style>

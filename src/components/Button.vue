@@ -20,7 +20,8 @@ const props = defineProps({
 		<slot />
 	</button>
 </template>
-<style scoped>
+<style scoped lang="scss">
+@use '@/assets/functions' as *;
 .Button {
 	display: flex;
 	flex-direction: row;
@@ -31,18 +32,18 @@ const props = defineProps({
 }
 
 .large {
-	width: 100px;
-	height: 100px;
+	width: vw(100px);
+	height: vw(100px);
 }
 
 .medium {
-	width: 90px;
-	height: 90px;
+	width: vw(90px);
+	height: vw(90px);
 }
 
 .small {
-	width: 76px;
-	height: 76px;
+	width: vw(80px);
+	height: vw(80px);
 }
 
 .black {

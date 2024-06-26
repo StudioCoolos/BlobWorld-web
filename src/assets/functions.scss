@@ -1,0 +1,39 @@
+@use 'sass:math';
+@use 'sass:map';
+
+$base-viewport-widths: (
+        'small': 852px,
+        'medium': 1024px,
+        'large': 1512px,
+);
+
+@function strip-unit($number) {
+  @return math.div($number, ($number * 0 + 1));
+}
+
+@function rem($value, $name: 'small') {
+  @if map-has-key($base-viewport-widths, $name) {
+    $viewport-size: map-get($base-viewport-widths, $name);
+    @return #{math.div(strip-unit($value), (math.div(strip-unit($viewport-size), 100)))}rem;
+  } @else {
+    @warn 'Unfortunately, no value could retieved from `#{$name}`. Please make sure it is defined in the `$base-viewport-widths` map.';
+  }
+}
+
+@function vw($px-value, $name: 'small') {
+  @if map-has-key($base-viewport-widths, $name) {
+    $viewport-size: map-get($base-viewport-widths, $name);
+    @return #{math.div(strip-unit($px-value), (math.div(strip-unit($viewport-size), 100)))}vw;
+  } @else {
+    @warn 'Unfortunately, no value could be retrieved from `#{$name}`. Please make sure it is defined in the `$base-viewport-widths` map.';
+  }
+}
+
+@function vh($px-value, $name: 'small') {
+  @if map-has-key($base-viewport-widths, $name) {
+    $viewport-size: map-get($base-viewport-widths, $name);
+    @return #{math.div(strip-unit($px-value), (math.div(strip-unit($viewport-size), 100)))}vh;
+  } @else {
+    @warn 'Unfortunately, no value could be retrieved from `#{$name}`. Please make sure it is defined in the `$base-viewport-widths` map.';
+  }
+}

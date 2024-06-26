@@ -1,11 +1,14 @@
 @import 'reset.css';
 @import 'transitions.css';
+@import 'functions.scss';
+@import 'mixins.scss';
+@import 'variables.scss';
 
-@import url('https://fonts.googleapis.com/css2?family=League+Gothic&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
 
 html,
 body {
-	background: #fff;
+	background: #0D0D16;
 	color: #000;
 	overflow: hidden;
 	touch-action: none;
@@ -14,6 +17,11 @@ body {
 	width: 100%;
 	height: 100%;
 	user-select: none;
+}
+
+#app {
+	width: 100%;
+	height: 100%;
 }
 
 /*#app.rotated {*/

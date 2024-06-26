@@ -16,6 +16,7 @@ import { useActiveScreensStore } from '@/stores/activeScreens.js'
 import Screen2 from '@/screens/Player1/Screen2.vue'
 import Screen0 from '@/screens/Player1/Screen0.vue'
 import ScreenDriving from '@/screens/Player1/ScreenDriving.vue'
+import BrandedPanel from '@/components/BrandedPanel.vue'
 
 const websocketStore = useWebsocketStore()
 const deviceStore = useDeviceStore()
@@ -26,7 +27,7 @@ const stepEnum = Object.freeze({
 	Throw: 3,
 	Key: 4,
 })
-const step = ref(stepEnum.Drive)
+const step = ref(stepEnum.Screw)
 
 websocketStore.ws.addEventListener('open', ({ target }) => {
 	target.send('web_1')
@@ -48,7 +49,12 @@ websocketStore.ws.addEventListener('message', (event) => {
 
 const store = useActiveScreensStore()
 
-const screens = ref([{ component: shallowRef(Screen0) }, { component: shallowRef(ScreenDriving) }])
+const screens = ref([
+	{ component: shallowRef(Screen0) },
+	{ component: shallowRef(Screen1) },
+	{ component: shallowRef(Screen2) },
+	{ component: shallowRef(ScreenDriving) },
+])
 
 const activeScreen = computed(() => store.activeScreen)
 </script>
@@ -61,6 +67,9 @@ const activeScreen = computed(() => store.activeScreen)
 	<!--		<label><input type="radio" v-model="step" :value="stepEnum.Throw" /> Throw</label>-->
 	<!--		<label><input type="radio" v-model="step" :value="stepEnum.Key" /> Key</label>-->
 	<!--	</fieldset>-->
+	<transition>
+		<BrandedPanel v-if="activeScreen !== 0" />
+	</transition>
 	<template v-if="step === stepEnum.Drive">
 		<Screen
 			v-for="(screen, index) in screens"
@@ -84,4 +93,14 @@ const activeScreen = computed(() => store.activeScreen)
 	<Toaster />
 </template>
 
-<style scoped></style>
+<style scoped>
+.v-enter-active,
+.v-leave-active {
+	transition: opacity 0.5s ease-in-out 0.8s;
+}
+
+.v-enter-from,
+.v-leave-to {
+	opacity: 0;
+}
+</style>
