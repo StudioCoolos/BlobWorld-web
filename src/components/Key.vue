@@ -27,6 +27,7 @@ import { lerp } from '@/utils/math'
  * @type {Ref<HTMLCanvasElement>}
  */
 const canvas = ref()
+const portal = ref()
 const spheresContainer = ref()
 /**
  * @type {Ref<CanvasRenderingContext2D>}
@@ -69,7 +70,14 @@ const targetZones = []
 
 onMounted(() => {
 	console.log('monkey ted')
-	setupCanvas()
+	// setupCanvas()
+	gsap.ticker.add(tick)
+
+	gsap.delayedCall(1, () => {
+		window.setInterval(() => {
+			sendMessage()
+		}, 500)
+	})
 })
 
 onUnmounted(() => {
@@ -99,7 +107,7 @@ function setupCanvas() {
 	const textureLoader = new THREE.TextureLoader()
 
 	// setup a threejs renderer in the canvas with a plane that has a shader material on it
-	renderer = new THREE.WebGLRenderer({ canvas: canvas.value, antialias: true })
+	renderer = new THREE.WebGLRenderer({ canvas: canvas.value, antialias: true, transparent: true })
 	renderer.setPixelRatio(window.devicePixelRatio)
 	renderer.setSize(window.innerWidth, window.innerHeight, true)
 
@@ -144,14 +152,6 @@ function setupCanvas() {
 	// pane.addBinding(material.uniforms.uRoundMergeRadius, 'value', { label: 'Merge Radius', min: 0, max: 1 })
 	// pane.addBinding(params, 'sphereRadiusMin', { label: 'Sphere Radius Min', min: 0.01, max: 0.2 })
 	// pane.addBinding(params, 'sphereRadiusMax', { label: 'Sphere Radius Max', min: 0.01, max: 0.2 })
-
-	gsap.ticker.add(tick)
-
-	gsap.delayedCall(1, () => {
-		window.setInterval(() => {
-			sendMessage()
-		}, 500)
-	})
 
 	// createPane()
 }
@@ -259,55 +259,62 @@ function handleTouchEnd(event) {
 function tick() {
 	if (isCompleted) return
 
-	if (renderer) {
-		renderer.render(scene, camera)
-		speed = lerp(speed, targetSpeed, ease)
-		material.uniforms.uSpeed.value = speed
-		material.uniforms.uTime.value = performance.now() / 1000
-	}
+	// renderer.render(scene, camera)
+	speed = lerp(speed, targetSpeed, ease)
+	portal.value.style.transform = `scale(${speed}) rotateZ(${performance.now() / 3}deg)`
+	// material.uniforms.uSpeed.value = speed
+	// material.uniforms.uTime.value = performance.now() / 1000
 }
 
 window.addEventListener('resize', onWindowResize, false)
 
 function onWindowResize() {
-	const screenWidth = window.innerWidth
-	const screenHeight = window.innerHeight
-	const aspectRatio = screenWidth / screenHeight
-
-	// material.uniforms.uResolution.value.x = screenWidth
-	// material.uniforms.uResolution.value.y = screenHeight
-
-	// Update camera
-	camera.aspect = aspectRatio
-	// For OrthographicCamera, adjust frustum
-	camera.left = -aspectRatio
-	camera.right = aspectRatio
-	camera.top = 1
-	camera.bottom = -1
-	camera.updateProjectionMatrix()
-
-	// Update renderer size
-	renderer.setSize(screenWidth, screenHeight)
+	// const screenWidth = window.innerWidth
+	// const screenHeight = window.innerHeight
+	// const aspectRatio = screenWidth / screenHeight
+	// // material.uniforms.uResolution.value.x = screenWidth
+	// // material.uniforms.uResolution.value.y = screenHeight
+	// // Update camera
+	// camera.aspect = aspectRatio
+	// // For OrthographicCamera, adjust frustum
+	// camera.left = -aspectRatio
+	// camera.right = aspectRatio
+	// camera.top = 1
+	// camera.bottom = -1
+	// camera.updateProjectionMatrix()
+	// // Update renderer size
+	// renderer.setSize(screenWidth, screenHeight)
 }
 </script>
 
 <template>
-	<canvas
+	<!-- <canvas
 		class="key"
 		ref="canvas"
 		@touchstart="handleTouchStart"
 		@touchmove="handleTouchMove"
 		@touchend="handleTouchEnd"
-	/>
-	<div ref="spheresContainer" class="spheres-container"></div>
+	/> -->
+	<div class="container" @touchstart="handleTouchStart" @touchmove="handleTouchMove" @touchend="handleTouchEnd">
+		<img src="/images/portal-image.png" class="portal" ref="portal" />
+	</div>
+	<!-- <div ref="spheresContainer" class="spheres-container"></div> -->
 </template>
 
 <style scoped>
-canvas {
+.container {
 	position: absolute;
+	left: 0;
+	top: 15vh;
+	width: 100vw;
+	height: 100vh;
+}
+.portal {
+	position: absolute;
+	left: 0;
+	top: 0;
 	inset: 0;
 	width: 100%;
-	height: 100%;
 }
 
 .key {

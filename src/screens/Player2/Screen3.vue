@@ -4,17 +4,27 @@ import Compass from '@/components/Compass.vue'
 import Button from '@/screens/Player2/Button.vue'
 import useWebsocketStore from '@/stores/websocket.js'
 import Throw from '@/components/Throw.vue'
+import Key from '@/components/Key.vue'
 import debounce from '@/utils/debounce.js'
 
 const websocketStore = useWebsocketStore()
 
 const helperVisible = ref(true)
+const portalVisible = ref(false)
 const blobThrowVisible = ref(false)
 
 onMounted(() => {
 	setTimeout(() => {
 		helperVisible.value = false
 	}, 5000)
+
+	websocketStore.ws.addEventListener('message', (event) => {
+		const data = JSON.parse(event.data)
+
+		if (data.event === 'portalZone') {
+			portalVisible.value = true
+		}
+	})
 })
 
 let isHeadlightsOn = false
@@ -83,6 +93,9 @@ const handleJumpClick = debounce(() => {
 			<Button always-toggled @click="handleKlaxonClick"><img src="/images/klaxon.svg" alt="klaxon logo" /></Button>
 			<Button always-toggled full-width class="jump" @click="handleJumpClick">JUMP</Button>
 		</div>
+		<transition name="fade">
+			<Key v-if="portalVisible" />
+		</transition>
 	</div>
 </template>
 
