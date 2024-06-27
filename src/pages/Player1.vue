@@ -25,7 +25,7 @@ const deviceStore = useDeviceStore()
 const stepStore = useStepsStore()
 const store = useActiveScreensStore()
 
-stepStore.setActiveStep('Cables')
+stepStore.setActiveStep('Drive')
 
 websocketStore.ws.addEventListener('open', ({ target }) => {
 	target.send('web_1')
