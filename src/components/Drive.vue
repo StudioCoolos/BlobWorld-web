@@ -97,6 +97,8 @@ function tick() {
 
 <style scoped lang="scss">
 @use '@/assets/functions' as *;
+@use '@/assets/variables' as *;
+
 .bubble-container {
 	position: absolute;
 	inset: 0;
@@ -145,7 +147,7 @@ function tick() {
 		will-change: filter;
 		transition:
 			background-color 0.2s ease-in-out,
-			filter 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+			filter 0.4s $quart-bezier-de-bz;
 		z-index: 2;
 	}
 

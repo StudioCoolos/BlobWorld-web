@@ -1,5 +1,6 @@
 <script setup>
 import { onMounted, onUnmounted, ref } from 'vue'
+import { gsap } from 'gsap'
 import useWebsocketStore from '@/stores/websocket.js'
 import useDeviceStore from '@/stores/device.js'
 
@@ -7,13 +8,21 @@ const emit = defineEmits(['handleFinish'])
 
 const websocketStore = useWebsocketStore()
 const deviceStore = useDeviceStore()
+
 deviceStore.setOrientationMode('landscape')
+
 const rotation = ref(0)
 const prevAlpha = ref(null)
 const rotationCount = ref(0)
 const goalRotation = ref(1)
+const screwContainer = ref()
+const screw = ref()
+const isFinished = ref(false)
 
 function handleDeviceOrientation(event) {
+	if (isFinished.value) {
+		return
+	}
 	const currentAlpha = event.alpha
 
 	if (prevAlpha.value === null) {
@@ -43,10 +52,41 @@ function handleDeviceOrientation(event) {
 }
 
 function handleFinish() {
-	emit('handleFinish')
-	websocketStore.sendMessage({
-		event: 'screw',
+	isFinished.value = true
+	animate().then(() => {
+		emit('handleFinish')
+		websocketStore.sendMessage({
+			event: 'screw',
+		})
 	})
+}
+
+async function animate() {
+	await gsap
+		.timeline()
+		.to(screw.value, {
+			duration: 1,
+			rotation: 900,
+			ease: 'power3.inOut',
+		})
+		.to(
+			screw.value,
+			{
+				duration: 1,
+				opacity: 0,
+				ease: 'power3.inOut',
+			},
+			'-=0.6',
+		)
+		.to(
+			screwContainer.value,
+			{
+				duration: 1,
+				opacity: 0,
+				ease: 'power3',
+			},
+			'-=0.6',
+		)
 }
 
 onMounted(() => {
@@ -59,64 +99,43 @@ onUnmounted(() => {
 </script>
 
 <template>
-	<div class="screw-container">
-		<img src="/images/screw-background.jpg" class="background" alt="" />
-		<svg viewBox="0 0 36 36" class="circle-svg">
-			<path
-				class="circle"
-				stroke-dasharray="60, 100"
-				d="M18 2.0845
-				a 15.9155 15.9155 0 0 1 0 31.831
-				a 15.9155 15.9155 0 0 1 0 -31.831"
-			/>
+	<div ref="screwContainer" class="screw-container">
+		<svg ref="screw" class="screw" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 172 172">
+			<circle cx="85.6" cy="85.6" r="85.6" fill="#A2A2A2" />
+			<path stroke="#848484" stroke-linecap="round" stroke-width="15" d="M140 86H29m56-56v112" />
 		</svg>
-		<img src="/images/screw-cap.png" class="screw" alt="" />
 	</div>
 </template>
 
-<style scoped>
-.circle-svg {
-	width: 300px;
-	height: 300px;
-	position: absolute;
-	inset: 0;
-	margin: auto;
-	transform: rotate(-90deg);
-}
-
-.circle {
-	stroke: #4cc790;
-	fill: none;
-	stroke-width: 2;
-	stroke-linecap: round;
-	stroke-dasharray: calc((v-bind(rotation) / (v-bind(goalRotation) * 360)) * 100), 100;
-}
+<style scoped lang="scss">
+@use '@/assets/functions' as *;
+@use '@/assets/variables' as *;
 
 button {
 	height: 50px;
 }
+
 .screw-container {
 	position: absolute;
+	overflow: hidden;
+	width: calc(50% + vw(123px));
+	box-sizing: border-box;
+	margin: vw(74px) 0 vw(74px) auto;
+	padding: vw(37px);
+	border-radius: vw(122px) 0 0 vw(122px);
 	inset: 0;
 	pointer-events: none;
-	z-index: -1;
+	z-index: 1;
 	display: flex;
-	justify-content: center;
+	justify-content: flex-start;
 	align-items: center;
-	background: url('/images/screw-background.jpg') center center;
+	background-color: $white;
 }
-.background {
-	pointer-events: none;
-	height: 220%;
-	z-index: -1;
-	transform-origin: 50% 50%;
-	transform: rotate(calc(v-bind(rotation) * 1deg));
-}
+
 .screw {
-	position: absolute;
-	inset: 0;
-	margin: auto;
-	width: 250px;
+	width: vw(171px);
+	height: vw(171px);
+	transform: rotate(calc(v-bind(rotation) * 1deg));
 	/* height: 250px; */
 }
 </style>

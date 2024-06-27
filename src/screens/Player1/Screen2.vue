@@ -31,7 +31,7 @@ const steps = ref([
 	},
 	{
 		component: step5,
-		duration: 3,
+		duration: 1,
 	},
 ])
 

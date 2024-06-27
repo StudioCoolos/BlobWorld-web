@@ -57,7 +57,7 @@ websocketStore.ws.addEventListener('message', (event) => {
 		font-weight: 500;
 		text-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
 		z-index: 1;
-		animation: blink 2s infinite ease-in-out;
+		animation: blink-lowop 2s infinite ease-in-out;
 
 		&::after {
 			@include clone-data-text;
@@ -65,15 +65,6 @@ websocketStore.ws.addEventListener('message', (event) => {
 		}
 	}
 
-	@keyframes blink {
-		0%,
-		100% {
-			opacity: 0.45;
-		}
-
-		50% {
-			opacity: 0.2;
-		}
-	}
+	@include blink-lowop-animation;
 }
 </style>

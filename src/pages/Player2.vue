@@ -90,13 +90,13 @@ function handlePermissionClick() {
 	</template>
 	<template v-else-if="step === stepEnum.Screw">
 		<Screw v-if="permissionsAccepted" @handleFinish="step = stepEnum.Cables" />
-		<button v-else @click="handlePermissionClick">Ask permissions</button>
+		<button style="color: white" v-else @click="handlePermissionClick">Ask permissions</button>
 	</template>
 	<template v-else-if="step === stepEnum.Cables">
 		<Cables
 			unknown-side="left"
-			:colors="['blue', 'green', 'red', 'yellow']"
-			:end-colors="['red', 'blue', 'green', 'yellow']"
+			:colors="['blue', 'green', 'red']"
+			:end-colors="['red', 'blue', 'green']"
 			@handleFinish="step = stepEnum.Controls"
 		/>
 	</template>

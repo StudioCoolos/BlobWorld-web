@@ -7,7 +7,7 @@ const emit = defineEmits(['handleFinish'])
 const props = defineProps({
 	colors: {
 		type: Array,
-		default: ['red', 'blue', 'green', 'yellow'],
+		default: ['red', 'blue', 'green'],
 	},
 	unknownSide: {
 		type: String,
@@ -15,11 +15,11 @@ const props = defineProps({
 	},
 	middleColors: {
 		type: Array,
-		default: ['green', 'blue', 'red', 'yellow'],
+		default: ['green', 'blue', 'red'],
 	},
 	endColors: {
 		type: Array,
-		default: ['blue', 'green', 'red', 'yellow'],
+		default: ['blue', 'green', 'red'],
 	},
 })
 
@@ -131,6 +131,10 @@ function handleTouchEnd(index, event) {
 		class="cables-container"
 		:class="{ 'unknown-side-left': unknownSide === 'left', 'unknown-side-right': unknownSide === 'right' }"
 	>
+		<div class="right-vertical-bar" />
+		<div class="bloc-container">
+			<img src="/images/cables-bloc.svg" alt="Electric bloc" class="bloc" />
+		</div>
 		<div
 			class="cable-wrapper"
 			v-for="(state, index) in cablesState"
@@ -163,13 +167,44 @@ function handleTouchEnd(index, event) {
 	</div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+@use '@/assets/functions' as *;
+
 .cables-container {
 	display: grid;
 	grid-template-columns: repeat(2, 1fr);
 	height: 100%;
 	grid-auto-flow: dense;
 	align-items: center;
+	background-image: url('/images/background-cables.svg');
+	background-position: right;
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
+.right-vertical-bar {
+	position: absolute;
+	width: vw(34px);
+	height: 100%;
+	right: 0;
+	top: 0;
+	background: #464646;
+	box-shadow:
+		0px 4px 4px 0px rgba(0, 0, 0, 0.25),
+		5px 1px 4px 0px #5b5b5b inset;
+}
+
+.bloc-container {
+	position: absolute;
+	inset: 0;
+	top: vw(37px);
+	bottom: vw(11px);
+	left: vw(78px);
+	width: vw(300px);
+	height: vw(250px);
+	opacity: 0;
+	.bloc {
+	}
 }
 
 .joint {
@@ -184,10 +219,15 @@ function handleTouchEnd(index, event) {
 	grid-column: 2;
 	justify-self: right;
 	position: relative;
+	margin-right: vw(34px);
 	z-index: 1;
+	box-shadow:
+		4px 0px 6.7px 0px rgba(0, 0, 0, 0.25) inset,
+		0px 4px 4px 0px rgba(0, 0, 0, 0.25);
 
 	.cable {
 		height: 80px;
+		border-radius: 2px 0 0 2px;
 		background: v-bind(unknownColor);
 	}
 
@@ -220,6 +260,8 @@ function handleTouchEnd(index, event) {
 .cable {
 	width: 50px;
 	height: 20px;
+	box-shadow: 0px 4px 2px 0px rgba(255, 255, 255, 0.25) inset;
+	filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
 }
 
 .caught-cable {
@@ -227,6 +269,8 @@ function handleTouchEnd(index, event) {
 	width: 1px;
 	transform-origin: 0 50%;
 	pointer-events: none;
+	box-shadow: 0px 4px 2px 0px rgba(255, 255, 255, 0.25) inset;
+	filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
 }
 
 .unknown-side-left {

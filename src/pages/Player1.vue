@@ -17,17 +17,15 @@ import Screen2 from '@/screens/Player1/Screen2.vue'
 import Screen0 from '@/screens/Player1/Screen0.vue'
 import ScreenDriving from '@/screens/Player1/ScreenDriving.vue'
 import BrandedPanel from '@/components/BrandedPanel.vue'
+import Button from '@/components/Button.vue'
+import { useStepsStore } from '@/stores/steps.js'
 
 const websocketStore = useWebsocketStore()
 const deviceStore = useDeviceStore()
-const stepEnum = Object.freeze({
-	Drive: 0,
-	Screw: 1,
-	Cables: 2,
-	Throw: 3,
-	Key: 4,
-})
-const step = ref(stepEnum.Screw)
+const stepStore = useStepsStore()
+const store = useActiveScreensStore()
+
+stepStore.setActiveStep('Cables')
 
 websocketStore.ws.addEventListener('open', ({ target }) => {
 	target.send('web_1')
@@ -40,14 +38,12 @@ websocketStore.ws.addEventListener('message', (event) => {
 
 	if (data.event === 'breakdown') {
 		deviceStore.isWarning = true
-		setTimeout(() => {
-			deviceStore.isWarning = false
-		}, 2000)
-		step.value = stepEnum.Screw
+		// setTimeout(() => {
+		// 	deviceStore.isWarning = false
+		// }, 2000)
+		// step.value = stepEnum.Screw
 	}
 })
-
-const store = useActiveScreensStore()
 
 const screens = ref([
 	{ component: shallowRef(Screen0) },
@@ -70,7 +66,8 @@ const activeScreen = computed(() => store.activeScreen)
 	<transition>
 		<BrandedPanel v-if="activeScreen !== 0" />
 	</transition>
-	<template v-if="step === stepEnum.Drive">
+
+	<template v-if="stepStore.activeStep === stepStore.steps.Drive">
 		<Screen
 			v-for="(screen, index) in screens"
 			:key="index"
@@ -78,19 +75,19 @@ const activeScreen = computed(() => store.activeScreen)
 			:component="screen.component"
 		/>
 	</template>
-	<template v-else-if="step === stepEnum.Screw">
-		<Screw @handleFinish="step = stepEnum.Cables" />
+	<template v-if="stepStore.activeStep === stepStore.steps.Screw">
+		<Screen0 />
+		<Screw @handleFinish="stepStore.activeStep = stepStore.steps.Cables" />
 	</template>
-	<template v-else-if="step === stepEnum.Cables">
-		<Cables unknown-side="right" @handleFinish="step = stepEnum.Drive" />
+	<template v-else-if="stepStore.activeStep === stepStore.steps.Cables">
+		<Cables unknown-side="right" @handleFinish="stepStore.activeStep = stepStore.steps.Drive" />
 	</template>
-	<template v-else-if="step === stepEnum.Throw">
+	<template v-else-if="stepStore.activeStep === stepStore.steps.Throw">
 		<Throw />
 	</template>
-	<template v-else-if="step === stepEnum.Key">
+	<template v-else-if="stepStore.activeStep === stepStore.steps.Key">
 		<Key />
 	</template>
-	<Toaster />
 </template>
 
 <style scoped>
