@@ -76,7 +76,14 @@ function handlePermissionClick() {
 
 <template>
 	<div class="player2">
-		<svg xmlns="http://www.w3.org/2000/svg" width="385" height="52" fill="none" viewBox="0 0 385 52">
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			width="385"
+			height="52"
+			fill="none"
+			viewBox="0 0 385 52"
+			style="transform: translateY(-1px)"
+		>
 			<path
 				fill="#000"
 				fill-rule="evenodd"
