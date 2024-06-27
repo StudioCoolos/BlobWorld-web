@@ -25,7 +25,7 @@ const deviceStore = useDeviceStore()
 const stepStore = useStepsStore()
 const store = useActiveScreensStore()
 
-stepStore.setActiveStep('Cables')
+stepStore.setActiveStep('Drive')
 
 websocketStore.ws.addEventListener('open', ({ target }) => {
 	target.send('web_1')
@@ -36,6 +36,15 @@ websocketStore.ws.addEventListener('open', ({ target }) => {
 		event: 'p1_connected',
 		recipient: 'web_2',
 	})
+	const interval = setInterval(() => {
+		websocketStore.sendMessage({
+			event: 'p1_connected',
+			recipient: 'web_2',
+		})
+	}, 2000)
+	setTimeout(() => {
+		clearInterval(interval)
+	}, 10000)
 })
 websocketStore.ws.addEventListener('message', (event) => {
 	const data = JSON.parse(event.data)

@@ -14,6 +14,7 @@ const goalDistance = ref(0)
 let targetGoalDistance = 0
 let lastGoalDistance = 0
 const resetGoal = ref(false)
+const hiddenGoal = ref(false)
 
 websocketStore.ws.addEventListener('message', (event) => {
 	const data = JSON.parse(event.data)
@@ -31,6 +32,7 @@ websocketStore.ws.addEventListener('message', (event) => {
 
 function tick() {
 	requestAnimationFrame(tick)
+	hiddenGoal.value = goalDistance.value < 1
 	if (Math.abs(targetGoalDistance - lastGoalDistance) > 20) {
 		resetGoal.value = true
 		setTimeout(() => {
@@ -57,7 +59,7 @@ onMounted(() => {
 <template>
 	<div class="compass">
 		<img src="/images/compass.svg" alt="compass" />
-		<div class="goal" :class="{ hidden: resetGoal }" />
+		<div class="goal" :class="{ hidden: resetGoal || hiddenGoal }" />
 	</div>
 </template>
 
@@ -79,7 +81,8 @@ img {
 	position: absolute;
 	width: 10px;
 	height: 10px;
-	background-color: red;
+	background-color: #b10000;
+	filter: blur(2px);
 	border-radius: 50%;
 	top: 50%;
 	left: 50%;

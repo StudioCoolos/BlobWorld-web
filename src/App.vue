@@ -24,7 +24,7 @@ const currentView = computed(() => {
 const debugStore = useDebugStore()
 const deviceStore = useDeviceStore()
 
-debugStore.pane.hidden = false
+debugStore.pane.hidden = true
 
 const appDebug = debugStore.addFolder({
 	title: 'App',

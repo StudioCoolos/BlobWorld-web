@@ -12,21 +12,30 @@ const canvas = ref()
  */
 const ctx = ref()
 const websocketStore = useWebsocketStore()
-const deviceStore = useDeviceStore()
-deviceStore.setOrientationMode('portrait')
 
-onMounted(() => {
+const props = defineProps({
+	opened: {
+		type: Boolean,
+		default: false,
+	},
+})
+const opened = ref(props.opened)
+
+let canvasRect = null
+function startCanvas() {
 	const canvasElement = canvas.value
 	canvasElement.width = canvasElement.clientWidth
 	canvasElement.height = canvasElement.clientHeight
+	canvasRect = canvasElement.getBoundingClientRect()
+
 	if (!canvasElement) return
 	ctx.value = canvasElement.getContext('2d')
-	ctx.value.strokeStyle = 'white'
-	ctx.value.fillStyle = 'rgba(0, 0, 0, 0.1)'
-	ctx.value.lineWidth = 10
+	ctx.value.strokeStyle = 'rgba(0, 0, 0, 1)'
+	ctx.value.fillStyle = 'rgba(255, 200, 0, 0.1)'
+	ctx.value.lineWidth = 50
 	ctx.value.lineCap = 'round'
 	requestAnimationFrame(tick)
-})
+}
 
 let lastX = 0
 let lastY = 0
@@ -35,8 +44,8 @@ let startX = 0
 let startY = 0
 
 function handleTouchStart(event) {
-	startX = lastX = event.touches[0].clientX
-	startY = lastY = event.touches[0].clientY
+	startX = lastX = event.touches[0].clientX - canvasRect.left
+	startY = lastY = event.touches[0].clientY - canvasRect.top
 
 	// websocketStore.sendMessage({
 	// 	event: 'throwStart',a
@@ -46,16 +55,16 @@ function handleTouchStart(event) {
 function handleTouchMove(event) {
 	ctx.value.beginPath()
 	ctx.value.moveTo(lastX, lastY)
-	ctx.value.lineTo(event.touches[0].clientX, event.touches[0].clientY)
+	ctx.value.lineTo(event.touches[0].clientX - canvasRect.left, event.touches[0].clientY - canvasRect.top)
 	ctx.value.stroke()
 	ctx.value.closePath()
-	lastX = event.touches[0].clientX
-	lastY = event.touches[0].clientY
+	lastX = event.touches[0].clientX - canvasRect.left
+	lastY = event.touches[0].clientY - canvasRect.top
 }
 
 function handleTouchEnd(event) {
-	const x = event.changedTouches[0].clientX
-	const y = event.changedTouches[0].clientY
+	const x = event.changedTouches[0].clientX - canvasRect.left
+	const y = event.changedTouches[0].clientY - canvasRect.top
 	if (y < startY) {
 		const force = Math.round(Math.sqrt((x - startX) ** 2 + (y - startY) ** 2))
 		const angle = Math.round((Math.atan2(y - startY, x - startX) + Math.PI / 2) * (180 / Math.PI))
@@ -72,23 +81,100 @@ function tick() {
 	ctx.value.fillRect(0, 0, canvas.value.width, canvas.value.height)
 	requestAnimationFrame(tick)
 }
+
+function handleEyeClick() {
+	opened.value = !opened.value
+	setTimeout(() => {
+		startCanvas()
+	}, 500)
+}
 </script>
 
 <template>
-	<canvas
-		class="throw"
-		ref="canvas"
-		@touchstart="handleTouchStart"
-		@touchmove="handleTouchMove"
-		@touchend="handleTouchEnd"
-	/>
+	<div class="throw" :class="{ 'throw--opened': opened, 'throw--shooting': shooting }">
+		<canvas
+			class="throw-canvas"
+			ref="canvas"
+			@touchstart="handleTouchStart"
+			@touchmove="handleTouchMove"
+			@touchend="handleTouchEnd"
+		/>
+		<button class="blob-eye" @click="handleEyeClick" />
+	</div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .throw {
+	--ease: cubic-bezier(0.76, 0, 0.24, 1);
+	--duration: 0.5s;
 	position: absolute;
-	inset: 0;
-	width: 100%;
-	height: 100%;
+	height: 80px;
+	left: 16px;
+	right: 16px;
+	width: calc(100% - 32px);
+	border-radius: 40px;
+	bottom: 20px;
+	outline: #ffeeb1 4px solid;
+	transition-property: bottom, height;
+	transition:
+		var(--duration) var(--ease),
+		border-radius 0.25s var(--ease);
+	contain: paint;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 1;
+
+	.throw-canvas {
+		width: 100%;
+		height: 100%;
+		background: #ffc700;
+	}
+
+	.blob-eye {
+		position: absolute;
+		width: 50px;
+		height: 50px;
+		background: white;
+		border-radius: 50%;
+		bottom: 15px;
+		transition: var(--duration) var(--ease);
+
+		&::before {
+			content: '';
+			position: absolute;
+			width: 20px;
+			height: 20px;
+			background: black;
+			border-radius: 50%;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			transition: opacity 0.5s;
+		}
+
+		&::after {
+			content: url('/images/cross.svg');
+			transition: scale 0.5s;
+			display: block;
+			scale: 0;
+		}
+	}
+
+	&--opened {
+		border-radius: 50vw 50vw 0 0;
+		bottom: 0;
+		height: 90%;
+
+		.blob-eye {
+			bottom: 35px;
+			&::before {
+				opacity: 0;
+			}
+			&::after {
+				scale: 1;
+			}
+		}
+	}
 }
 </style>

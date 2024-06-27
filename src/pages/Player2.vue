@@ -22,16 +22,22 @@ const stepEnum = Object.freeze({
 	Compass: 5,
 })
 const step = ref(stepEnum.Controls)
+const permissionsAccepted = ref(false)
 
 websocketStore.ws.addEventListener('open', ({ target }) => {
 	target.send('web_2')
 	websocketStore.sendMessage({
 		event: 'p2_connected',
 	})
-	websocketStore.sendMessage({
-		event: 'p2_connected',
-		recipient: 'web_1',
-	})
+	const interval = setInterval(() => {
+		websocketStore.sendMessage({
+			event: 'p2_connected',
+			recipient: 'web_1',
+		})
+	}, 2000)
+	setTimeout(() => {
+		clearInterval(interval)
+	}, 10000)
 })
 websocketStore.ws.addEventListener('message', (event) => {
 	const data = JSON.parse(event.data)
@@ -49,6 +55,17 @@ websocketStore.ws.addEventListener('message', (event) => {
 })
 
 const screens = [Screen1, Screen2, Screen3]
+
+function handlePermissionClick() {
+	allPermissions()
+		.then((result) => {
+			permissionsAccepted.value = true
+			console.log(result)
+		})
+		.catch((reason) => {
+			alert(reason)
+		})
+}
 </script>
 
 <template>
@@ -66,7 +83,8 @@ const screens = [Screen1, Screen2, Screen3]
 			/>
 		</svg>
 		<transition name="fade" mode="out-in">
-			<component :is="screens[store.activeScreen]" />
+			<component :is="screens[store.activeScreen]" v-if="permissionsAccepted" />
+			<button @click="handlePermissionClick" v-else>Accept permissions</button>
 		</transition>
 
 		<svg xmlns="http://www.w3.org/2000/svg" width="393" height="52" fill="none" viewBox="0 0 393 52">
@@ -86,5 +104,9 @@ const screens = [Screen1, Screen2, Screen3]
 	height: 100%;
 	justify-content: center;
 	align-items: center;
+
+	button {
+		color: white;
+	}
 }
 </style>
