@@ -13,6 +13,7 @@ import Screw from '@/components/Screw.vue'
 import { useStepsStore } from '@/stores/steps.js'
 import Cables from '@/components/Cables.vue'
 import Key from '@/components/Key.vue'
+import useDeviceStore from '@/stores/device.js'
 
 const websocketStore = useWebsocketStore()
 const store = useActiveScreensStore()
@@ -25,6 +26,8 @@ const stepEnum = Object.freeze({
 	Key: 3,
 })
 const step = ref(stepEnum.Controls)
+const deviceStore = useDeviceStore()
+
 const permissionsAccepted = ref(false)
 
 websocketStore.ws.addEventListener('open', ({ target }) => {
@@ -46,7 +49,7 @@ websocketStore.ws.addEventListener('message', (event) => {
 	const data = JSON.parse(event.data)
 
 	if (data.event === 'breakdown') {
-		step.value = stepEnum.Screw
+		deviceStore.isWarning = true
 	}
 
 	if (data.event === 'p1_connected') {
