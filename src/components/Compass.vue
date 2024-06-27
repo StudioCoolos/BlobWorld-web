@@ -25,7 +25,7 @@ websocketStore.ws.addEventListener('message', (event) => {
 		const radialGoalAngle = (goalAngle * Math.PI) / 180 - Math.PI / 2
 		targetGoalAngleX = Math.cos(radialGoalAngle)
 		targetGoalAngleY = Math.sin(radialGoalAngle)
-		targetGoalDistance = clamp((data.goalDistance.replace(',', '.') / 20_000) * 180, 0, 180)
+		targetGoalDistance = clamp((data.goalDistance.replace(',', '.') / 20_000) * 145, 0, 145)
 	}
 })
 
@@ -66,6 +66,8 @@ onMounted(() => {
 	position: relative;
 	width: 100%;
 	height: 100%;
+	max-width: 300px;
+	max-height: 300px;
 }
 
 img {

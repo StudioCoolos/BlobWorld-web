@@ -32,6 +32,10 @@ websocketStore.ws.addEventListener('open', ({ target }) => {
 	websocketStore.sendMessage({
 		event: 'p1_connected',
 	})
+	websocketStore.sendMessage({
+		event: 'p1_connected',
+		recipient: 'web_2',
+	})
 })
 websocketStore.ws.addEventListener('message', (event) => {
 	const data = JSON.parse(event.data)

@@ -1,88 +1,65 @@
-<script setup>
-import { useActiveScreensStore } from '@/stores/activeScreens.js'
-import { ref } from 'vue'
-import useWebsocketStore from '@/stores/websocket.js'
-import Screw from '@/components/Screw.vue'
-import Throw from '@/components/Throw.vue'
-import Cables from '@/components/Cables.vue'
-import Radio from '@/components/Radio.vue'
-import Klaxon from '@/components/Klaxon.vue'
-import Headlights from '@/components/Headlights.vue'
-import useDeviceStore from '@/stores/device.js'
-
-const stepEnum = Object.freeze({
-	Drive: 0,
-	Screw: 1,
-	Cables: 2,
-	Throw: 3,
-	Key: 4,
-	Controls: 5,
-})
-const step = ref(stepEnum.Controls)
-const store = useActiveScreensStore()
-
-const permissionsAccepted = ref(false)
-
-const websocketStore = useWebsocketStore()
-const deviceStore = useDeviceStore()
-
-websocketStore.ws.addEventListener('message', (event) => {
-	const data = JSON.parse(event.data)
-
-	if (data.event === 'breakdown') {
-		deviceStore.isWarning = true
-		setTimeout(() => {
-			deviceStore.isWarning = false
-		}, 2000)
-		step.value = stepEnum.Screw
-	}
-})
-
-function handlePermissionClick() {
-	permissionsAccepted.value = true
-}
-</script>
+<script setup></script>
 
 <template>
 	<div class="Screen1">
-		<template v-if="step === stepEnum.Throw">
-			<Throw />
-		</template>
-		<template v-else-if="step === stepEnum.Screw">
-			<Screw v-if="permissionsAccepted" @handleFinish="step = stepEnum.Cables" />
-			<button style="color: white" v-else @click="handlePermissionClick">Ask permissions</button>
-		</template>
-		<template v-else-if="step === stepEnum.Cables">
-			<Cables
-				unknown-side="left"
-				:colors="['blue', 'green', 'red']"
-				:end-colors="['red', 'blue', 'green']"
-				@handleFinish="step = stepEnum.Controls"
-			/>
-		</template>
-		<template v-else-if="step === stepEnum.Controls">
-			<Radio />
-			<Headlights />
-			<Klaxon />
-		</template>
+		<p class="title" data-text="Bienvenue à bord">Bienvenue à bord</p>
+		<p class="subtitle" data-text="En attente du pilote">En attente du pilote</p>
 	</div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+@use '@/assets/functions' as *;
+@use '@/assets/mixins' as *;
+@use '@/assets/variables' as *;
+
 .Screen1 {
 	display: flex;
 	flex-direction: column;
 	text-transform: uppercase;
-	color: #000;
+	color: $purple;
 	text-align: center;
-	font-family: 'League Gothic', sans-serif;
-
-	font-style: normal;
-	font-weight: 400;
-	line-height: normal;
+	@include base-text;
 
 	.title {
-		font-size: 40px;
+		position: relative;
+		top: 0;
+		left: 0;
+		font-size: 24px;
+		font-weight: 700;
+		z-index: 1;
+
+		&::after {
+			@include clone-data-text;
+			filter: blur(4px);
+		}
+	}
+
+	.subtitle {
+		position: relative;
+		top: 0;
+		left: 0;
+		font-size: 16px;
+		opacity: 0.45;
+		font-weight: 500;
+		text-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+		z-index: 1;
+		animation: blink 2s infinite ease-in-out;
+
+		&::after {
+			@include clone-data-text;
+			filter: blur(4px);
+		}
+	}
+
+	@keyframes blink {
+		0%,
+		100% {
+			opacity: 0.45;
+		}
+
+		50% {
+			opacity: 0.2;
+		}
 	}
 }
 </style>
