@@ -1,7 +1,17 @@
-<script setup></script>
+<script setup>
+import { useActiveScreensStore } from '@/stores/activeScreens.js'
+
+const store = useActiveScreensStore()
+function handleClick() {
+	store.setActiveScreen(1)
+	setTimeout(() => {
+		store.setActiveScreen(2)
+	}, 3000)
+}
+</script>
 
 <template>
-	<div class="Screen1">
+	<div class="Screen1" @click="handleClick">
 		<p class="title" data-text="Bienvenue à bord">Bienvenue à bord</p>
 		<p class="subtitle" data-text="En attente du pilote">En attente du pilote</p>
 	</div>

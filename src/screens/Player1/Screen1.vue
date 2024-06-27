@@ -15,7 +15,7 @@ websocketStore.ws.addEventListener('message', (event) => {
 </script>
 
 <template>
-	<div class="Screen1">
+	<div class="Screen1" @click="store.setActiveScreen(2)">
 		<p class="title" data-text="Bienvenue à bord">Bienvenue à bord</p>
 		<p class="subtitle" data-text="En attente du co-pilote...">En attente du co-pilote...</p>
 	</div>
