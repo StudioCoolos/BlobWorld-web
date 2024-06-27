@@ -9,17 +9,20 @@ import { useActiveScreensStore } from '@/stores/activeScreens.js'
 import Screen1 from '@/screens/Player2/Screen1.vue'
 import Screen2 from '@/screens/Player2/Screen2.vue'
 import Screen3 from '@/screens/Player2/Screen3.vue'
+import Screw from '@/components/Screw.vue'
+import { useStepsStore } from '@/stores/steps.js'
+import Cables from '@/components/Cables.vue'
+import Key from '@/components/Key.vue'
 
 const websocketStore = useWebsocketStore()
 const store = useActiveScreensStore()
+const stepStore = useStepsStore()
 
 const stepEnum = Object.freeze({
 	Controls: 0,
-	Throw: 1,
-	Screw: 2,
-	Cables: 3,
-	Key: 4,
-	Compass: 5,
+	Screw: 1,
+	Cables: 2,
+	Key: 3,
 })
 const step = ref(stepEnum.Controls)
 const permissionsAccepted = ref(false)
@@ -83,8 +86,21 @@ function handlePermissionClick() {
 			/>
 		</svg>
 		<transition name="fade" mode="out-in">
-			<component :is="screens[store.activeScreen]" v-if="permissionsAccepted" />
-			<button @click="handlePermissionClick" v-else>Accept permissions</button>
+			<template v-if="stepStore.activeStep === stepStore.steps.Drive">
+				<component :is="screens[store.activeScreen]" v-if="permissionsAccepted" />
+				<button @click="handlePermissionClick" v-else-if="!permissionsAccepted">Accept permissions</button>
+			</template>
+			<Screw
+				v-else-if="stepStore.activeStep === stepStore.steps.Screw"
+				@handleFinish="stepStore.activeStep = stepStore.steps.Cables"
+			/>
+			<Cables
+				v-else-if="stepStore.activeStep === stepStore.steps.Cables"
+				unknown-side="left"
+				:colors="['blue', 'green', 'red']"
+				:end-colors="['red', 'blue', 'green']"
+				@handleFinish="stepStore.activeStep = stepStore.steps.Drive"
+			/>
 		</transition>
 
 		<svg xmlns="http://www.w3.org/2000/svg" width="393" height="52" fill="none" viewBox="0 0 393 52">

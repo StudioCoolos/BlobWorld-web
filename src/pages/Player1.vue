@@ -1,7 +1,4 @@
 <script setup>
-import Strike from '@/components/Strike.vue'
-import Drive from '@/components/Drive.vue'
-import allPermissions from '@/utils/permissions.js'
 import { computed, onMounted, ref, shallowRef } from 'vue'
 import useWebsocketStore from '@/stores/websocket.js'
 import Cables from '@/components/Cables.vue'
