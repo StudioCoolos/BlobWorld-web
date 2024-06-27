@@ -9,7 +9,7 @@ import debounce from '@/utils/debounce.js'
 const websocketStore = useWebsocketStore()
 
 const helperVisible = ref(true)
-const blobThrowVisible = ref(false)
+const blobThrowVisible = ref(true)
 
 onMounted(() => {
 	setTimeout(() => {
