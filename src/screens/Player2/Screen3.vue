@@ -9,7 +9,7 @@ import debounce from '@/utils/debounce.js'
 const websocketStore = useWebsocketStore()
 
 const helperVisible = ref(true)
-const blobThrowVisible = ref(true)
+const blobThrowVisible = ref(false)
 
 onMounted(() => {
 	setTimeout(() => {
@@ -37,6 +37,14 @@ const handleJumpClick = debounce(() => {
 		event: 'strike',
 	})
 }, 1000)
+
+websocketStore.ws.addEventListener('message', (event) => {
+	const data = JSON.parse(event.data)
+
+	if (data.event === 'blobify') {
+		blobThrowVisible.value = true
+	}
+})
 </script>
 
 <template>
@@ -110,7 +118,7 @@ const handleJumpClick = debounce(() => {
 		justify-content: center;
 		text-align: center;
 		background: rgba(0, 0, 0, 0.8);
-		z-index: 1;
+		z-index: 10;
 		p {
 			width: 80%;
 		}
@@ -133,6 +141,7 @@ const handleJumpClick = debounce(() => {
 		grid-template-columns: repeat(2, 1fr);
 		gap: 24px;
 		grid-template-rows: repeat(2, 1fr);
+		padding-bottom: 32px;
 
 		.jump {
 			grid-column: 1 / -1;
