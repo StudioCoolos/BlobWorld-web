@@ -44,6 +44,7 @@ let startX = 0
 let startY = 0
 
 function handleTouchStart(event) {
+	if (!opened.value) return
 	startX = lastX = event.touches[0].clientX - canvasRect.left
 	startY = lastY = event.touches[0].clientY - canvasRect.top
 
@@ -53,6 +54,7 @@ function handleTouchStart(event) {
 }
 
 function handleTouchMove(event) {
+	if (!opened.value) return
 	ctx.value.beginPath()
 	ctx.value.moveTo(lastX, lastY)
 	ctx.value.lineTo(event.touches[0].clientX - canvasRect.left, event.touches[0].clientY - canvasRect.top)
@@ -63,6 +65,7 @@ function handleTouchMove(event) {
 }
 
 function handleTouchEnd(event) {
+	if (!opened.value) return
 	const x = event.changedTouches[0].clientX - canvasRect.left
 	const y = event.changedTouches[0].clientY - canvasRect.top
 	if (y < startY) {
@@ -88,6 +91,11 @@ function handleEyeClick() {
 		startCanvas()
 	}, 500)
 }
+
+function handleCanvasClick() {
+	if (opened.value) return
+	handleEyeClick()
+}
 </script>
 
 <template>
@@ -98,6 +106,7 @@ function handleEyeClick() {
 			@touchstart="handleTouchStart"
 			@touchmove="handleTouchMove"
 			@touchend="handleTouchEnd"
+			@click="handleCanvasClick"
 		/>
 		<button class="blob-eye" @click="handleEyeClick" />
 	</div>
@@ -115,10 +124,8 @@ function handleEyeClick() {
 	border-radius: 40px;
 	bottom: 20px;
 	outline: #ffeeb1 4px solid;
-	transition-property: bottom, height;
-	transition:
-		var(--duration) var(--ease),
-		border-radius 0.25s var(--ease);
+	transition-property: bottom, height, border-radius;
+	transition: var(--duration) var(--ease);
 	contain: paint;
 	display: flex;
 	justify-content: center;
@@ -151,6 +158,25 @@ function handleEyeClick() {
 			left: 50%;
 			transform: translate(-50%, -50%);
 			transition: opacity 0.5s;
+			animation: animation 10s infinite;
+
+			@keyframes animation {
+				0% {
+					transform: translate(-50%, -50%) translate(-5px, 5px);
+				}
+				50% {
+					transform: translate(-50%, -50%) translate(5px, 5px);
+				}
+				60% {
+					transform: translate(-50%, -50%);
+				}
+				70% {
+					transform: translate(-50%, -50%) translate(-5px, -5px);
+				}
+				100% {
+					transform: translate(-50%, -50%) translate(-5px, 5px);
+				}
+			}
 		}
 
 		&::after {
