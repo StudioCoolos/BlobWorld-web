@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import useWebsocketStore from '@/stores/websocket.js'
-import { lerp, clamp } from '@/utils/math.js'
+import { lerp, clamp, lerpAngle } from '@/utils/math.js'
 
 const websocketStore = useWebsocketStore()
 const vehicleAngle = ref(0)
@@ -44,7 +44,7 @@ function tick() {
 	}
 
 	lastGoalDistance = targetGoalDistance
-	vehicleAngle.value = lerp(vehicleAngle.value, targetVehicleAngle, 0.01)
+	vehicleAngle.value = lerpAngle(vehicleAngle.value, targetVehicleAngle, 0.01)
 	if (resetGoal.value) return
 	goalAngleX.value = lerp(goalAngleX.value, targetGoalAngleX, 0.01)
 	goalAngleY.value = lerp(goalAngleY.value, targetGoalAngleY, 0.01)
@@ -79,16 +79,27 @@ img {
 
 .goal {
 	position: absolute;
-	width: 10px;
-	height: 10px;
+	width: 24px;
+	height: 24px;
 	background-color: #b10000;
-	filter: blur(2px);
+	filter: blur(4px);
 	border-radius: 50%;
 	top: 50%;
 	left: 50%;
 	transition: opacity 1s;
 	transform: translateX(v-bind('goalAngleX * goalDistance + "px"'))
 		translateY(v-bind('goalAngleY * goalDistance + "px"'));
+	animation: pulse 4s infinite linear;
+
+	@keyframes pulse {
+		0%,
+		100% {
+			opacity: 0.6;
+		}
+		50% {
+			opacity: 1;
+		}
+	}
 }
 
 .hidden {
