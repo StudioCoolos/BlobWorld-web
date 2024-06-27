@@ -38,9 +38,9 @@ function handleTouchStart(event) {
 	startX = lastX = event.touches[0].clientX
 	startY = lastY = event.touches[0].clientY
 
-	websocketStore.sendMessage({
-		event: 'throwStart',
-	})
+	// websocketStore.sendMessage({
+	// 	event: 'throwStart',a
+	// })
 }
 
 function handleTouchMove(event) {
