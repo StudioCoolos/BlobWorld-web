@@ -12,7 +12,7 @@ function handlePermissionClick() {
 		.then((result) => {
 			permissionsAccepted.value = true
 			console.log(result)
-			store.setActiveScreen(1)
+			store.setActiveScreen(2)
 		})
 		.catch((reason) => {
 			alert(reason)
